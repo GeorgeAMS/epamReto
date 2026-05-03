@@ -136,7 +136,7 @@ cd apps/pokedex-arcana-frontend && npm run build
 Hecho con cariño por **Jorge Andrés Martínez Santos** — si te gustó el proyecto, conectemos:
 
 - 💼 [**LinkedIn**](https://www.linkedin.com/in/jorge-andres-martinez-santos-a59b45387/)
-- 📸 [**Instagram @jorge_martinez_87**](https://www.instagram.com/jorge_martinez_87/)
+- 📸 [**Instagram @jorge_martinez_78**](https://www.instagram.com/jorge_martinez_78/)
 
 > *“Hay que atraparlos ya…”* 🎵 — pero primero hay que entenderlos.
 
