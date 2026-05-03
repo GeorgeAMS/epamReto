@@ -48,7 +48,7 @@ def test_synthesizer_offline_returns_response_with_aggregated_confidence() -> No
     result = synth.run(ai, agent_outputs=outputs)
 
     assert result.agent == "synthesizer"
-    assert result.content.startswith("[offline:brain:")
+    assert result.content.startswith("[offline:light:")
     assert len(result.sources) == 1  # dedupe
     assert 0.6 <= result.confidence <= 0.85
     assert result.data["sub_agents"] == ["stats_agent", "strategy_agent"]
@@ -81,4 +81,4 @@ def test_synthesizer_stream_yields_tokens() -> None:
     src = Source(id="s", title="t", url=None, kind="dataset")
     chunks = list(synth.stream(ai, agent_outputs=[_resp("stats_agent", [src])]))
     full = "".join(chunks)
-    assert full.startswith("[offline:brain:")
+    assert full.startswith("[offline:light:")

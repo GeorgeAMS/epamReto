@@ -11,10 +11,11 @@ Esperar: `Application startup complete`
 
 ### Terminal 2: Frontend
 ```powershell
-cd C:\Users\jorge\pokeArca\apps\web
+cd C:\Users\jorge\pokeArca\apps\pokedex-arcana-frontend
+Copy-Item .env.example .env -ErrorAction SilentlyContinue
 npm run dev
 ```
-Esperar: `ready - started server on 0.0.0.0:3000`
+Esperar: mensaje `ready` de Vite (puerto en consola, p. ej. 5173 o 8080).
 
 ### Terminal 3: Verificacion
 ```powershell
@@ -30,7 +31,7 @@ Esperar: todos los tests en `OK`.
 - [ ] Query `hola` conversacional
 - [ ] Query `pikachu` no robotica
 - [ ] Team building funciona
-- [ ] Frontend carga en `:3000`
+- [ ] Frontend carga (URL que indique Vite)
 - [ ] Frontend usa API `:18001`
 
 ## Troubleshooting
@@ -51,6 +52,6 @@ cd C:\Users\jorge\pokeArca
 ### Frontend no conecta
 ```powershell
 cd C:\Users\jorge\pokeArca
-Get-Content .\apps\web\.env.local
+Get-Content .\apps\pokedex-arcana-frontend\.env
 ```
-Debe decir: `NEXT_PUBLIC_API_URL=http://127.0.0.1:18001`
+Debe decir: `VITE_API_URL=http://127.0.0.1:18001` (o tu URL pública del API).

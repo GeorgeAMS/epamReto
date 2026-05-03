@@ -114,11 +114,11 @@ def test_orchestrator_handle_mixed_runs_three_agents() -> None:
 
 
 def test_orchestrator_handle_calc_without_payload_skips_calculator() -> None:
-    """Ruta rápida: calc intent sigue resolviendo stats del Pokémon detectado."""
+    """Sin payload tipado, calc responde explícitamente que faltan datos."""
     orch = _build_orch()
     response = orch.handle("calcula daño de Blizzard con Pikachu", trace_id="trace-calc")  # type: ignore[arg-type]
     assert response.agent == "synthesizer"
-    assert "pikachu" in response.content.lower()
+    assert "calculatorrequest" in response.content.lower()
 
 
 def test_orchestrator_handle_stream_emits_intent_agent_token_done() -> None:

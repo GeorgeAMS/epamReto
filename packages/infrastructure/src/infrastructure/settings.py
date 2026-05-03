@@ -54,7 +54,12 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     api_log_level: str = "INFO"
-    api_cors_origins: str = "http://localhost:3000,http://localhost:3001"
+    api_cors_origins: str = (
+        "http://localhost:3000,http://127.0.0.1:3000,"
+        "http://localhost:3001,http://127.0.0.1:3001,"
+        "http://localhost:8080,http://127.0.0.1:8080,"
+        "http://localhost:5173,http://127.0.0.1:5173"
+    )
     reports_dir: str = "./reports"
 
     # --- Misc ---

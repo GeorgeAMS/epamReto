@@ -5,12 +5,12 @@ stop:
 	docker compose down
 
 api:
-	uv run uvicorn api.main:app --reload --port 8000
+	cd apps/api && uv run uvicorn api.main:app --reload --host 127.0.0.1 --port 18001
 
 web:
-	cd apps/web && npm run dev
+	cd apps/pokedex-arcana-frontend && npm run dev
 
 demo:
-	@echo "Frontend: http://localhost:3000"
-	@echo "API: http://localhost:8000/docs"
+	@echo "Frontend: ver URL en consola de Vite (apps/pokedex-arcana-frontend)"
+	@echo "API: http://127.0.0.1:18001/docs"
 	@echo "Langfuse: http://localhost:3001"

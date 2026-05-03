@@ -1,0 +1,50 @@
+# Pokédex Arcana — Reglas para Cursor
+
+LEE `AGENTS.md` ANTES DE CUALQUIER CAMBIO. Es la fuente de verdad.
+
+## Stack (no cambiar)
+- TanStack Start v1 (React 19 + Vite 7) — NO Next.js, NO React Router DOM.
+- Tailwind v4 vía src/styles.css (NO crear tailwind.config.js).
+- TypeScript estricto.
+- Routing file-based en src/routes/.
+- Datos: TanStack Query. Animación: Framer Motion. Markdown: react-markdown.
+
+## Diseño Pokémon — OBLIGATORIO
+Paleta: usa SIEMPRE las variables CSS:
+  --poke-red, --poke-red-dark, --poke-yellow, --poke-blue, --poke-blue-dark,
+  --poke-white, --poke-black, --poke-cream
+Tipos: usa <TypeChip type="..." /> de @/components/pokemon/TypeChip.
+
+Clases PROHIBIDAS en className:
+  bg-white, text-white, bg-black, text-black,
+  bg-gray-*, bg-slate-*, bg-zinc-*, bg-neutral-*,
+  bg-purple-*, bg-indigo-*, bg-violet-*, from-purple-*, to-purple-*,
+  shadow-md, shadow-lg, shadow-xl,
+  dark: variants (no hay modo oscuro).
+
+Clases OBLIGATORIAS para el look "cartucho Pokémon":
+  - Bordes: border-2 border-poke-black  ó  border-[3px] border-poke-black
+  - Sombra dura: shadow-[0_3px_0_0_var(--poke-black)] (o 2/4/5/6 px)
+  - Radius: rounded-xl, rounded-2xl, rounded-full
+  - Títulos: font-display
+  - Microtexto/badges: font-pixel text-[8px]/[9px] uppercase
+  - Botones: usar .poke-btn o receta equivalente con borde negro + sombra dura
+  - Cards: usar .poke-panel / .poke-panel-soft
+
+## Arquitectura
+- TODA llamada al backend pasa por src/lib/api/client.ts (api.* o streamChat).
+  PROHIBIDO `fetch(...)` directo en componentes.
+- URL del backend SOLO via import.meta.env.VITE_API_URL. Nunca hardcodear puertos.
+- Navegación con <Link to="..."> de @tanstack/react-router. Nunca <a href> interno.
+- NO editar src/routeTree.gen.ts ni src/components/ui/* salvo orden explícita.
+- Componentes Pokémon reutilizables → src/components/pokemon/.
+
+## Invariantes funcionales
+- Nunca truncar mensajes del bot (sin line-clamp en MessageBubble).
+- Nunca ocultar/recortar DamageCard.
+- Estados intent/agent visibles durante streaming.
+
+## Antes de cada cambio
+1. Lee src/styles.css y un componente similar existente.
+2. Si dudas del estilo, NO inventes — pregunta.
+3. Verifica el checklist al final de AGENTS.md.

@@ -4,15 +4,46 @@ Plan de ejecución por fases. Cada fase termina con criterio verificable.
 
 ---
 
+## Estado real (2026-05-03)
+
+El código ya implementa la mayor parte de las fases descritas abajo
+(dominio, infraestructura, agentes, API y frontend). Para operar "en verde"
+de forma reproducible, el orden recomendado es:
+
+1. `uv sync` y `cd apps/pokedex-arcana-frontend` + `npm install`
+2. `docker compose up -d`
+3. Configurar `.env` (`GROQ_API_KEY`; `GEMINI_API_KEY` si `EMBEDDING_PROVIDER=gemini`)
+4. Configurar `apps/pokedex-arcana-frontend/.env` con `VITE_API_URL=http://127.0.0.1:18001`
+5. Verificar calidad:
+
+```bash
+uv run pytest -q
+uv run ruff check .
+```
+
+6. Levantar servicios:
+
+```bash
+uv run uvicorn api.main:app --reload --host 127.0.0.1 --port 18001
+cd apps/pokedex-arcana-frontend; npm run dev
+```
+
+Notas operativas:
+- El modo offline del LLM funciona sin key para smoke tests, pero no sustituye demo real.
+- `ReporterAgent` puede degradar a `.md` si falta runtime de WeasyPrint/GTK en Windows.
+- RAG (lore/strategy) requiere colecciones en Qdrant con datos ya ingeridos.
+
+---
+
 ## ✅ FASE 0 — Bootstrap
 
-- [x] Estructura de carpetas: `apps/{api,web}`, `packages/{shared,domain,infrastructure,agents}`, `eval/`, `data/raw/`.
+- [x] Estructura de carpetas: `apps/{api,pokedex-arcana-frontend}`, `packages/{shared,domain,infrastructure,agents}`, `eval/`, `data/raw/`.
 - [x] `README.md` y `ROADMAP.md`.
 - [x] `.env.example` con TODAS las variables (Anthropic, OpenAI, Qdrant, Langfuse).
 - [x] `.gitignore` para Python + Node.
 - [x] `docker-compose.yml` con Qdrant + Langfuse + Postgres.
 - [x] `pyproject.toml` raíz con workspace uv y per-package `pyproject.toml`.
-- [x] `apps/web/package.json` inicial Next.js 14.
+- [x] `apps/pokedex-arcana-frontend` — TanStack Start + Vite (UI principal).
 
 **Cómo verificar:**
 

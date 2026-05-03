@@ -325,7 +325,7 @@ class Synthesizer(BaseAgent):
             f"Información disponible:\n{context or 'Sin contexto estructurado'}\n\n"
             "Instrucciones:\n"
             "- Español natural\n"
-            "- Máximo 150 palabras\n"
+            "- Máximo 260 palabras\n"
             "- Integra datos de forma fluida\n"
             "- Si faltan datos, dilo sin inventar\n"
         )
@@ -338,7 +338,7 @@ class Synthesizer(BaseAgent):
             response = self._llm.complete(
                 prompt,
                 role=LLMRole.LIGHT,
-                options=LLMOptions(max_tokens=120, temperature=0.2),
+                options=LLMOptions(max_tokens=320, temperature=0.2),
             )
             response_text = getattr(response, "content", None) or getattr(response, "text", None) or str(response)
             print("[OK] LLM RESPONDIO:")

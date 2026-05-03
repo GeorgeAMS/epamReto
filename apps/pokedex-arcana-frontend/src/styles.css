@@ -1,0 +1,271 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-poke-red: var(--poke-red);
+  --color-poke-red-dark: var(--poke-red-dark);
+  --color-poke-yellow: var(--poke-yellow);
+  --color-poke-blue: var(--poke-blue);
+  --color-poke-blue-dark: var(--poke-blue-dark);
+  --color-poke-white: var(--poke-white);
+  --color-poke-black: var(--poke-black);
+  --color-poke-cream: var(--poke-cream);
+
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --shadow-poke: 0 6px 0 0 var(--poke-black), 0 10px 24px -8px rgba(0,0,0,0.4);
+  --shadow-poke-sm: 0 3px 0 0 var(--poke-black), 0 6px 14px -6px rgba(0,0,0,0.35);
+  --shadow-card: 0 4px 0 0 oklch(0 0 0 / 0.18), 0 12px 24px -10px oklch(0 0 0 / 0.25);
+  --shadow-glow-yellow: 0 0 0 3px color-mix(in oklab, var(--poke-yellow) 50%, transparent), 0 8px 30px -6px color-mix(in oklab, var(--poke-yellow) 60%, transparent);
+
+  --font-display: "Fredoka", "Baloo 2", ui-sans-serif, system-ui;
+  --font-sans: "Nunito", "Inter", ui-sans-serif, system-ui;
+  --font-pixel: "Press Start 2P", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 1rem;
+
+  /* Pokémon types — colores oficiales */
+  --type-normal: oklch(0.78 0.03 80);
+  --type-fire: oklch(0.70 0.20 40);
+  --type-water: oklch(0.65 0.18 245);
+  --type-electric: oklch(0.86 0.18 95);
+  --type-grass: oklch(0.72 0.19 145);
+  --type-ice: oklch(0.84 0.09 200);
+  --type-fighting: oklch(0.55 0.20 30);
+  --type-poison: oklch(0.55 0.21 320);
+  --type-ground: oklch(0.72 0.14 75);
+  --type-flying: oklch(0.78 0.11 270);
+  --type-psychic: oklch(0.70 0.21 0);
+  --type-bug: oklch(0.74 0.18 130);
+  --type-rock: oklch(0.62 0.08 70);
+  --type-ghost: oklch(0.50 0.13 295);
+  --type-dragon: oklch(0.55 0.22 270);
+  --type-dark: oklch(0.40 0.05 40);
+  --type-steel: oklch(0.78 0.03 220);
+  --type-fairy: oklch(0.82 0.11 350);
+
+  /* Paleta Pokémon */
+  --poke-red: oklch(0.62 0.22 25);
+  --poke-red-dark: oklch(0.52 0.22 25);
+  --poke-yellow: oklch(0.88 0.18 92);
+  --poke-blue: oklch(0.55 0.18 250);
+  --poke-blue-dark: oklch(0.40 0.16 250);
+  --poke-white: oklch(0.99 0.005 100);
+  --poke-black: oklch(0.18 0.01 270);
+  --poke-cream: oklch(0.97 0.018 90);
+
+  /* Light por defecto, papel/cream Pokédex */
+  --background: oklch(0.97 0.01 220);
+  --foreground: oklch(0.18 0.02 270);
+
+  --surface-1: oklch(1 0 0);
+  --surface-2: oklch(0.96 0.01 230);
+  --surface-3: oklch(0.92 0.015 230);
+
+  --card: var(--surface-1);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface-1);
+  --popover-foreground: var(--foreground);
+
+  --primary: var(--poke-red);
+  --primary-foreground: var(--poke-white);
+  --secondary: var(--poke-blue);
+  --secondary-foreground: var(--poke-white);
+  --muted: var(--surface-2);
+  --muted-foreground: oklch(0.42 0.02 260);
+  --accent: var(--poke-yellow);
+  --accent-foreground: var(--poke-black);
+  --destructive: oklch(0.60 0.24 25);
+  --destructive-foreground: oklch(0.99 0 0);
+
+  --border: oklch(0.18 0.02 270 / 0.14);
+  --input: oklch(0.18 0.02 270 / 0.10);
+  --ring: var(--poke-blue);
+
+  --chart-1: var(--poke-red);
+  --chart-2: var(--poke-blue);
+  --chart-3: var(--poke-yellow);
+  --chart-4: oklch(0.65 0.20 145);
+  --chart-5: oklch(0.55 0.21 320);
+
+  --sidebar: var(--surface-1);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--surface-2);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html, body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+  }
+  body {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    background-color: var(--poke-cream);
+    background-image:
+      radial-gradient(circle at 12px 12px, oklch(0.18 0.02 270 / 0.045) 1.5px, transparent 1.6px),
+      radial-gradient(900px 500px at 100% -10%, color-mix(in oklab, var(--poke-red) 12%, transparent), transparent 60%),
+      radial-gradient(800px 400px at -10% 100%, color-mix(in oklab, var(--poke-blue) 14%, transparent), transparent 60%);
+    background-size: 24px 24px, auto, auto;
+    background-attachment: fixed;
+    min-height: 100vh;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  .font-display { font-family: var(--font-display); }
+  .font-pixel { font-family: var(--font-pixel); letter-spacing: 0; }
+
+  .pokeball-bg {
+    background-image:
+      radial-gradient(circle at 50% 50%, var(--poke-white) 0 14%, var(--poke-black) 14% 18%, transparent 19%),
+      linear-gradient(180deg, var(--poke-red) 0 50%, var(--poke-white) 50% 100%);
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .gradient-text {
+    background: linear-gradient(100deg, var(--poke-red) 0%, var(--poke-yellow) 60%, var(--poke-blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-stroke: 1px transparent;
+  }
+
+  .text-stroke {
+    -webkit-text-stroke: 2px var(--poke-black);
+    paint-order: stroke fill;
+  }
+
+  /* Tarjeta tipo cartucho/Pokédex */
+  .poke-panel {
+    background: var(--poke-white);
+    border: 3px solid var(--poke-black);
+    border-radius: 18px;
+    box-shadow: 0 6px 0 0 var(--poke-black), 0 14px 30px -10px rgba(0,0,0,0.25);
+  }
+  .poke-panel-soft {
+    background: var(--poke-white);
+    border: 2px solid color-mix(in oklab, var(--poke-black) 70%, transparent);
+    border-radius: 16px;
+    box-shadow: 0 4px 0 0 color-mix(in oklab, var(--poke-black) 70%, transparent);
+  }
+
+  .poke-btn {
+    border: 3px solid var(--poke-black);
+    border-radius: 999px;
+    box-shadow: 0 4px 0 0 var(--poke-black);
+    transition: transform .08s ease, box-shadow .08s ease;
+    font-weight: 800;
+  }
+  .poke-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 0 0 var(--poke-black); }
+  .poke-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 0 var(--poke-black); }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 10px; height: 10px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--poke-black); border-radius: 999px; border: 2px solid var(--poke-cream); }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+
+  @keyframes shake { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-12deg)} 75%{transform:rotate(12deg)} }
+  .pokeball-shake { animation: shake 0.9s ease-in-out infinite; transform-origin: center; }
+
+  @keyframes pulse-dot { 0%,100%{opacity:1; transform:translateY(0)} 50%{opacity:0.4; transform:translateY(-2px)} }
+  .typing-dot { animation: pulse-dot 1.1s ease-in-out infinite; }
+
+  @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+  .skeleton {
+    background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+    border-radius: 14px;
+  }
+
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  .float { animation: float 3.5s ease-in-out infinite; }
+}
+
+/* Type chips estilo cartucho */
+.type-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 12px; border-radius: 999px;
+  font-size: 11px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--poke-white);
+  border: 2px solid var(--poke-black);
+  box-shadow: 0 2px 0 0 var(--poke-black);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+}
+.type-normal{background:var(--type-normal);color:var(--poke-black);text-shadow:none}
+.type-fire{background:var(--type-fire)}
+.type-water{background:var(--type-water)}
+.type-electric{background:var(--type-electric);color:var(--poke-black);text-shadow:none}
+.type-grass{background:var(--type-grass)}
+.type-ice{background:var(--type-ice);color:var(--poke-black);text-shadow:none}
+.type-fighting{background:var(--type-fighting)}
+.type-poison{background:var(--type-poison)}
+.type-ground{background:var(--type-ground);color:var(--poke-black);text-shadow:none}
+.type-flying{background:var(--type-flying);color:var(--poke-black);text-shadow:none}
+.type-psychic{background:var(--type-psychic)}
+.type-bug{background:var(--type-bug);color:var(--poke-black);text-shadow:none}
+.type-rock{background:var(--type-rock)}
+.type-ghost{background:var(--type-ghost)}
+.type-dragon{background:var(--type-dragon)}
+.type-dark{background:var(--type-dark)}
+.type-steel{background:var(--type-steel);color:var(--poke-black);text-shadow:none}
+.type-fairy{background:var(--type-fairy);color:var(--poke-black);text-shadow:none}
+
+/* Markdown estilo Pokédex */
+.markdown-body { line-height: 1.65; font-weight: 500; }
+.markdown-body p { margin: 0.5em 0; }
+.markdown-body strong { color: var(--poke-red); font-weight: 800; }
+.markdown-body code { background: var(--poke-cream); padding: 0.1em 0.45em; border-radius: 6px; font-size: 0.88em; border: 1.5px solid var(--poke-black); font-family: var(--font-pixel); font-size: 10px; }
+.markdown-body pre { background: var(--poke-black); color: var(--poke-yellow); padding: 12px; border-radius: 12px; overflow-x: auto; border: 2px solid var(--poke-black); }
+.markdown-body pre code { background: transparent; border: none; color: inherit; }
+.markdown-body ul { list-style: "▸  "; padding-left: 1.2em; margin: 0.4em 0; }
+.markdown-body ol { list-style: decimal; padding-left: 1.4em; margin: 0.4em 0; }
+.markdown-body h1, .markdown-body h2, .markdown-body h3 { margin-top: 0.8em; margin-bottom: 0.3em; font-family: var(--font-display); }
+.markdown-body a { color: var(--poke-blue); text-decoration: underline wavy; text-underline-offset: 3px; font-weight: 700; }

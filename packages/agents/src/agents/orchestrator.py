@@ -137,10 +137,13 @@ class GraphState(TypedDict, total=False):
     trace_id: str
     intent: str
     entities: dict[str, Any]
+    calculator_request: Any
     stats_response: str
     lore_response: str
     strategy_response: str
     strategy_agent_dump: dict[str, Any]
+    calculator_agent_dump: dict[str, Any]
+    calculator_parse: dict[str, Any]
     agent_outputs: list[AgentResponse]
     verified_outputs: list[AgentResponse]
     final_response: AgentResponse
@@ -201,7 +204,8 @@ _CLASSIFY_SYSTEM = (
 
 _CALC_KW = (
     "daño", "damage", "calcula", "calculate", "blizzard contra", "vs ", " vs.",
-    "how much damage", "would it do",
+    "how much damage", "would it do", "max roll", "máximo del rango",
+    "daño máximo", "damage check", "benchmark", "recheck numbers",
 )
 _STRAT_KW = (
     "equipo", "team", "cobertura", "coverage", "tier", "smogon", "ou", "vgc",
@@ -331,6 +335,8 @@ class Orchestrator:
         print(f"\n>>> NODE: classify | Query: {state.get('query', '')}")
         raw = state["query"]
         merged: dict[str, Any] = dict(state.get("entities") or {})
+        if state.get("calculator_request") is not None:
+            merged["calculator_request"] = state["calculator_request"]
         intent = "stats"
         pokemon_names: list[str] = []
         moves: list[str] = []
@@ -439,8 +445,39 @@ class Orchestrator:
             return state
 
         if intent == "calculation":
-            print("<<< NODE: dispatch | Agent outputs: calculator_path")
-            return self.calculator_agent.execute(state)  # type: ignore[return-value]
+            out = dict(state)
+            req_obj = entities.get("calculator_request") or state.get("calculator_request")
+            calc_req: CalculatorRequest | None = (
+                req_obj if isinstance(req_obj, CalculatorRequest) else None
+            )
+            extracted: dict[str, Any] = {}
+            if calc_req is None:
+                calc_req, extracted = self._try_build_calc_request(state["query"], entities)
+
+            if calc_req is None:
+                # En intent de cálculo NO devolvemos texto conversacional inventado:
+                # devolvemos una respuesta explícita de "faltan datos" para el usuario.
+                ai = AgentInput(
+                    query=state["query"],
+                    trace_id=tid,
+                    context={"entities": entities, "extracted": extracted},
+                )
+                skipped_resp = self._calculator_skipped(ai)
+                out["calculator_agent_dump"] = skipped_resp.model_dump(mode="json")
+                out["calculator_parse"] = {"skipped": True, "extracted": extracted}
+                print("<<< NODE: dispatch | Agent outputs: calculator_skipped=1")
+                return out
+
+            ai = AgentInput(
+                query=state["query"],
+                trace_id=tid,
+                context={"calculator_request": calc_req, "entities": entities},
+            )
+            calc_resp = self.calculator_agent.run(ai)
+            out["calculator_agent_dump"] = calc_resp.model_dump(mode="json")
+            out["calculator_parse"] = {"skipped": False, "extracted": extracted}
+            print("<<< NODE: dispatch | Agent outputs: calculator_agent_dump=1")
+            return out
 
         out = dict(state)
         try:
@@ -493,6 +530,20 @@ class Orchestrator:
                 data={**strat.data, "intent": "strategy", "fast_path": False},
             )
             print(f"<<< NODE: synthesize | Response length: {len(text)}")
+            return {"final_response": final}
+
+        if "calculator_agent_dump" in sd and sd["calculator_agent_dump"]:
+            print("DEBUG: _node_synthesize path CALC")
+            calc = AgentResponse.model_validate(sd["calculator_agent_dump"])
+            final = AgentResponse(
+                agent="synthesizer",
+                content=calc.content,
+                confidence=float(calc.confidence),
+                trace_id=TraceId(sd["trace_id"]),
+                sources=calc.sources,
+                data={**calc.data, "intent": "calculation", "fast_path": False},
+            )
+            print(f"<<< NODE: synthesize | Response length: {len(calc.content)}")
             return {"final_response": final}
 
         print("DEBUG: Llamando a synthesizer.synthesize()")
@@ -563,7 +614,12 @@ class Orchestrator:
     ) -> tuple[CalculatorRequest | None, dict[str, Any]]:
         extracted: dict[str, Any] = {}
         names_raw = entities.get("pokemon", [])
-        names = [str(n) for n in names_raw] if isinstance(names_raw, list) else []
+        if isinstance(names_raw, list):
+            names = [str(n) for n in names_raw]
+        elif isinstance(names_raw, str) and names_raw.strip():
+            names = [names_raw.strip()]
+        else:
+            names = []
         q = query.strip()
 
         nature_match = re.search(r"\b([A-Za-z]+)\s+natured\s+([A-Za-z'\-]+)", q, re.I)
@@ -571,13 +627,39 @@ class Orchestrator:
             extracted["attacker_nature"] = nature_match.group(1).title()
             extracted["attacker"] = nature_match.group(2).strip().title()
 
+        triplet_match = re.search(
+            r"\b([A-Za-z'\-]+(?:\s+[A-Za-z'\-]+){0,2})\s+from\s+([A-Za-z'\-]+)\s+to\s+([A-Za-z'\-]+)",
+            q,
+            re.I,
+        )
+        if triplet_match:
+            extracted["move"] = triplet_match.group(1).strip().title()
+            extracted["attacker"] = triplet_match.group(2).strip().title()
+            extracted["defender"] = triplet_match.group(3).strip().title()
+
         move_match = re.search(r"\buses?\s+([A-Za-z'\- ]+?)\s+against\b", q, re.I)
-        if move_match:
+        if not move_match:
+            move_match = re.search(r"\bcon\s+([A-Za-z'\- ]+?)\s+contra\b", q, re.I)
+        if not move_match:
+            move_match = re.search(r"\b([A-Za-z'\- ]+?)\s+from\s+[A-Za-z'\- ]+\s+to\b", q, re.I)
+        if move_match and "move" not in extracted:
             extracted["move"] = move_match.group(1).strip().title()
 
-        def_match = re.search(r"\bagainst\s+(?:a|an|the|my)?\s*([A-Za-z'\- ]+?)(?:\s+with|\?|,|$)", q, re.I)
+        def_match = re.search(r"\bagainst\s+(?:a|an|the|my)?\s*([A-Za-z'\-]+)", q, re.I)
+        if not def_match:
+            def_match = re.search(r"\bcontra\s+(?:a|an|the|my|una|un|el|la)?\s*([A-Za-z'\-]+)", q, re.I)
+        if not def_match:
+            def_match = re.search(r"\bto\s+([A-Za-z'\-]+)", q, re.I)
         if def_match:
             extracted["defender"] = def_match.group(1).strip().title()
+
+        from_match = re.search(r"\bfrom\s+([A-Za-z'\-]+)", q, re.I)
+        if from_match and "attacker" not in extracted:
+            extracted["attacker"] = from_match.group(1).strip().title()
+        if "attacker" not in extracted:
+            atk_match = re.search(r"\b([A-Za-z'\-]+)\s+con\s+[A-Za-z'\- ]+\s+contra\b", q, re.I)
+            if atk_match:
+                extracted["attacker"] = atk_match.group(1).strip().title()
 
         ev_match = re.search(r"(\d+)\s*sp\.?\s*d\s*evs?", q, re.I)
         if ev_match:
@@ -591,6 +673,16 @@ class Orchestrator:
         moves_raw = entities.get("moves", [])
         if "move" not in extracted and isinstance(moves_raw, list) and moves_raw:
             extracted["move"] = str(moves_raw[0]).title()
+
+        move_alias = {
+            "Hydro": "Hydro Pump",
+            "Rain-Boosted Hydro": "Hydro Pump",
+        }
+        if "move" in extracted:
+            move_name = str(extracted["move"]).strip()
+            if "hydro" in move_name.lower() and "pump" not in move_name.lower():
+                move_name = "Hydro Pump"
+            extracted["move"] = move_alias.get(move_name, move_name)
 
         required = {"attacker", "defender", "move"}
         if not required <= set(extracted):
@@ -610,7 +702,8 @@ class Orchestrator:
                 str(extracted["defender"]),
                 evs=defender_evs,
             )
-            move = self._pokeapi.to_domain_move(str(extracted["move"]))
+            move_name = str(extracted["move"]).strip().replace(" ", "-")
+            move = self._pokeapi.to_domain_move(move_name)
             return (
                 CalculatorRequest(attacker=attacker, defender=defender, move=move),
                 extracted,
@@ -646,6 +739,7 @@ class Orchestrator:
             # El node_dispatch necesita ver esto; lo empaquetamos en entities
             # para que llegue a CalculatorAgent.
             initial["entities"] = {"calculator_request": context["calculator_request"]}
+            initial["calculator_request"] = context["calculator_request"]
 
         try:
             final_state: GraphState = self._graph.invoke(initial)  # type: ignore[arg-type]
@@ -689,6 +783,7 @@ class Orchestrator:
         }
         if context and "calculator_request" in context:
             partial_state["entities"] = {"calculator_request": context["calculator_request"]}
+            partial_state["calculator_request"] = context["calculator_request"]
         partial_state.update(self._node_classify(partial_state))  # type: ignore[arg-type]
         yield {
             "event": "intent",

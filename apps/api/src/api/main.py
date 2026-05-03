@@ -72,15 +72,31 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(TraceIdMiddleware)
     # CORS must be registered before routes for frontend preflight requests.
-    cors_origins = list(dict.fromkeys([*settings.cors_origins_list, "http://localhost:3000", "http://127.0.0.1:3000"]))
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=cors_origins,
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-        expose_headers=["X-Trace-Id"],
+    # TanStack/Vite dev suele usar 8080 o 5173; 3000 era el Next antiguo.
+    cors_origins = list(
+        dict.fromkeys(
+            [
+                *settings.cors_origins_list,
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+                "http://localhost:8080",
+                "http://127.0.0.1:8080",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+            ]
+        )
     )
+    cors_kw: dict[str, Any] = {
+        "allow_origins": cors_origins,
+        "allow_credentials": True,
+        "allow_methods": ["*"],
+        "allow_headers": ["*"],
+        "expose_headers": ["X-Trace-Id"],
+    }
+    # En dev, cualquier puerto en localhost/127.0.0.1 (evita CORS al cambiar el puerto de Vite).
+    if settings.env == "dev":
+        cors_kw["allow_origin_regex"] = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
+    app.add_middleware(CORSMiddleware, **cors_kw)
 
     @app.get("/health")
     def health() -> dict[str, Any]:
