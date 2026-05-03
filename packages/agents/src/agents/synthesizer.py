@@ -49,6 +49,8 @@ REGLAS DURAS:
 1. Cita cada hecho con marcadores ``[1]``, ``[2]``, etc., usando los números
    que aparecen en la sección "Fuentes" del prompt.
 2. NUNCA inventes datos. Si los sub-agentes no aportan algo, dilo explícitamente.
+   Sobre anime/manga o historia de personajes: no afirmes victorias, derrotas, episodios ni fechas
+   que no figuren en el texto citado de lore_agent / Bulbapedia.
 3. Mantén el formato Markdown: títulos con `##`, listas, negritas en nombres
    de Pokémon y movimientos.
 4. Sé conciso pero completo: 3–10 párrafos máximo.
@@ -332,6 +334,9 @@ class Synthesizer(BaseAgent):
             "- Máximo 260 palabras\n"
             "- Integra datos de forma fluida\n"
             "- Si faltan datos, dilo sin inventar\n"
+            "- Anime/manga/historia: solo lo que aparezca en el bloque Lore/Historia; "
+            "no añadas tramas, resultados de ligas ni episodios que no estén ahí. "
+            "Si el lore es corto o vacío, dilo y no rellenes con suposiciones.\n"
         )
         print("\n[TRACE] CONTEXTO PARA LLM:")
         print(context or "Sin contexto estructurado")
