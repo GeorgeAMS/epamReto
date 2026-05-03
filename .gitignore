@@ -51,6 +51,7 @@ htmlcov/
 
 # --- Datos / cachés del proyecto ------------------------------------------
 data/cache/
+apps/api/data/cache/
 data/processed/
 data/raw/*.csv
 data/raw/*.json
@@ -71,6 +72,12 @@ out/
 next-env.d.ts
 
 # Logs
+apps/api/*.log
+apps/api/chat_response.json
+query*_result.json
+query*_fixed.json
+query*_production.json
+query*_body.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
