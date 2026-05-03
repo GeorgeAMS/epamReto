@@ -1,0 +1,21 @@
+{
+    "agent":  "synthesizer",
+    "content":  "Pikachu, mi favorito. Es un Pokémon electrico muy rápido, con una velocidad de 90 puntos. En cuanto a su ataque, tiene 55 puntos, lo que no está mal. Su defensa es de 40 puntos, así que hay que tener cuidado. La habilidad Static es muy útil, puede paralizar a los oponentes. En general, Pikachu es un Pokémon muy equilibrado, con 35 puntos de HP. Me encanta entrenar con él, siempre es un desafío. ¿Quieres saber más sobre su evolución o cómo entrenarlo?\n\n*Fuente principal: PokéAPI*",
+    "confidence":  0.9,
+    "confidence_level":  "verified",
+    "sources":  [
+                    {
+                        "id":  "pokeapi:pikachu",
+                        "title":  "PokéAPI · pikachu",
+                        "url":  "https://pokeapi.co/api/v2/pokemon/pikachu",
+                        "snippet":  null,
+                        "kind":  "pokeapi"
+                    }
+                ],
+    "data":  {
+                 "intent":  "stats",
+                 "fast_path":  true
+             },
+    "trace_id":  "85f8fc3f03e9",
+    "conversation_id":  "61814a9506f84a85a12aebbecb21a2eb"
+}

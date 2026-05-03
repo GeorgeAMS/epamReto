@@ -1,0 +1,2 @@
+# Coloca aquí los CSV/JSON descargados de Kaggle (Pokémon stats, moves, etc.).
+# El loader `infrastructure/ingestion/csv_ingest.py` los pasa a DuckDB.

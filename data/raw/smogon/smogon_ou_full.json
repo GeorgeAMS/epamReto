@@ -1,0 +1,794 @@
+[
+  {
+    "pokemon": "dragapult",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/dragapult/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485032.349232
+  },
+  {
+    "pokemon": "landorus-therian",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/landorus-therian/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485035.3956397
+  },
+  {
+    "pokemon": "garchomp",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/garchomp/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485038.4566379
+  },
+  {
+    "pokemon": "heatran",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/heatran/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485041.6508183
+  },
+  {
+    "pokemon": "ferrothorn",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/ferrothorn/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485044.349365
+  },
+  {
+    "pokemon": "toxapex",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/toxapex/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485047.282361
+  },
+  {
+    "pokemon": "corviknight",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/corviknight/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485050.0404596
+  },
+  {
+    "pokemon": "clefable",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/clefable/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485053.6696534
+  },
+  {
+    "pokemon": "slowbro",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/slowbro/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485056.6581624
+  },
+  {
+    "pokemon": "rillaboom",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/rillaboom/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485059.8088887
+  },
+  {
+    "pokemon": "zapdos",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/zapdos/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485062.5410361
+  },
+  {
+    "pokemon": "tornadus-therian",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/tornadus-therian/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485065.3410914
+  },
+  {
+    "pokemon": "kartana",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/kartana/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485067.718944
+  },
+  {
+    "pokemon": "tapu-lele",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/tapu-lele/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485070.2297485
+  },
+  {
+    "pokemon": "magnezone",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/magnezone/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485072.5299869
+  },
+  {
+    "pokemon": "volcarona",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/volcarona/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485075.4359024
+  },
+  {
+    "pokemon": "scizor",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/scizor/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485077.931692
+  },
+  {
+    "pokemon": "tyranitar",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/tyranitar/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485081.0690293
+  },
+  {
+    "pokemon": "excadrill",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/excadrill/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485084.092139
+  },
+  {
+    "pokemon": "weavile",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/weavile/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485087.2330675
+  },
+  {
+    "pokemon": "gengar",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/gengar/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485089.9980614
+  },
+  {
+    "pokemon": "dragonite",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/dragonite/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485093.0492299
+  },
+  {
+    "pokemon": "melmetal",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/melmetal/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485096.0320861
+  },
+  {
+    "pokemon": "azumarill",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/azumarill/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485099.4456708
+  },
+  {
+    "pokemon": "gyarados",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/gyarados/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485105.5618534
+  },
+  {
+    "pokemon": "rotom-wash",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/rotom-wash/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485108.728725
+  },
+  {
+    "pokemon": "jirachi",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/jirachi/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485468.942408
+  },
+  {
+    "pokemon": "mew",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/mew/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485116.532151
+  },
+  {
+    "pokemon": "celesteela",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/celesteela/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485120.2873147
+  },
+  {
+    "pokemon": "tapu-fini",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/tapu-fini/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485124.0040586
+  },
+  {
+    "pokemon": "alakazam",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/alakazam/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485127.7337465
+  },
+  {
+    "pokemon": "blissey",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/blissey/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485133.8101592
+  },
+  {
+    "pokemon": "skarmory",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/skarmory/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485138.6803277
+  },
+  {
+    "pokemon": "hippowdon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/hippowdon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485142.7728212
+  },
+  {
+    "pokemon": "pelipper",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/pelipper/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485148.416617
+  },
+  {
+    "pokemon": "ninetales-alola",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/ninetales-alola/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485151.7181673
+  },
+  {
+    "pokemon": "hydreigon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/hydreigon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485160.328804
+  },
+  {
+    "pokemon": "mimikyu",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/mimikyu/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485167.4926627
+  },
+  {
+    "pokemon": "aegislash",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/aegislash/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485171.9144838
+  },
+  {
+    "pokemon": "bisharp",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/bisharp/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485177.4241781
+  },
+  {
+    "pokemon": "mandibuzz",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/mandibuzz/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485193.4045796
+  },
+  {
+    "pokemon": "amoonguss",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/amoonguss/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485199.2568412
+  },
+  {
+    "pokemon": "chansey",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/chansey/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485207.6957743
+  },
+  {
+    "pokemon": "ditto",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/ditto/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485211.9561343
+  },
+  {
+    "pokemon": "gastrodon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/gastrodon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485214.7920814
+  },
+  {
+    "pokemon": "gliscor",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/gliscor/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485221.2549186
+  },
+  {
+    "pokemon": "latios",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/latios/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485226.5859625
+  },
+  {
+    "pokemon": "mamoswine",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/mamoswine/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485229.0289798
+  },
+  {
+    "pokemon": "reuniclus",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/reuniclus/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485233.3966372
+  },
+  {
+    "pokemon": "serperior",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/serperior/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485236.240757
+  },
+  {
+    "pokemon": "blaziken",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/blaziken/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485242.3645604
+  },
+  {
+    "pokemon": "charizard",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/charizard/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485246.6632264
+  },
+  {
+    "pokemon": "venusaur",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/venusaur/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485249.8071914
+  },
+  {
+    "pokemon": "blastoise",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/blastoise/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485253.741234
+  },
+  {
+    "pokemon": "snorlax",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/snorlax/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485257.0711524
+  },
+  {
+    "pokemon": "umbreon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/umbreon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485262.7429392
+  },
+  {
+    "pokemon": "espeon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/espeon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485265.450836
+  },
+  {
+    "pokemon": "lucario",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/lucario/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485268.129245
+  },
+  {
+    "pokemon": "metagross",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/metagross/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485272.654768
+  },
+  {
+    "pokemon": "salamence",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/salamence/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485275.4537163
+  },
+  {
+    "pokemon": "swampert",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/swampert/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485278.3037534
+  },
+  {
+    "pokemon": "breloom",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/breloom/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485281.1144817
+  },
+  {
+    "pokemon": "milotic",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/milotic/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485285.3991003
+  },
+  {
+    "pokemon": "absol",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/absol/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485288.0628173
+  },
+  {
+    "pokemon": "aggron",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/aggron/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485291.2828987
+  },
+  {
+    "pokemon": "slaking",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/slaking/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485294.1102479
+  },
+  {
+    "pokemon": "flygon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/flygon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485296.8306503
+  },
+  {
+    "pokemon": "armaldo",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/armaldo/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485299.3868322
+  },
+  {
+    "pokemon": "cradily",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/cradily/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485302.172571
+  },
+  {
+    "pokemon": "claydol",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/claydol/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485304.7523212
+  },
+  {
+    "pokemon": "dusclops",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/dusclops/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485398.8629968
+  },
+  {
+    "pokemon": "banette",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/banette/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485401.9312534
+  },
+  {
+    "pokemon": "tropius",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/tropius/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485404.568875
+  },
+  {
+    "pokemon": "chimecho",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/chimecho/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485409.026746
+  },
+  {
+    "pokemon": "wynaut",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/wynaut/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485412.0303926
+  },
+  {
+    "pokemon": "snorunt",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/snorunt/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485415.1803503
+  },
+  {
+    "pokemon": "sealeo",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/sealeo/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485417.9147348
+  },
+  {
+    "pokemon": "walrein",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/walrein/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485420.800559
+  },
+  {
+    "pokemon": "clamperl",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/clamperl/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485423.556572
+  },
+  {
+    "pokemon": "relicanth",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/relicanth/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485426.355182
+  },
+  {
+    "pokemon": "luvdisc",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/luvdisc/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485431.91857
+  },
+  {
+    "pokemon": "bagon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/bagon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485436.3047726
+  },
+  {
+    "pokemon": "beldum",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/beldum/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485438.8812652
+  },
+  {
+    "pokemon": "metang",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/metang/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485441.539569
+  },
+  {
+    "pokemon": "regirock",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/regirock/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485444.5079372
+  },
+  {
+    "pokemon": "regice",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/regice/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485447.2329414
+  },
+  {
+    "pokemon": "registeel",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/registeel/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485450.1685002
+  },
+  {
+    "pokemon": "latias",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/latias/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485456.155587
+  },
+  {
+    "pokemon": "kyogre",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/kyogre/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485458.926983
+  },
+  {
+    "pokemon": "groudon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/groudon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485461.66893
+  },
+  {
+    "pokemon": "rayquaza",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/rayquaza/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485465.0823076
+  },
+  {
+    "pokemon": "deoxys",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/deoxys/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485472.1333613
+  },
+  {
+    "pokemon": "torterra",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/torterra/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485477.2956002
+  },
+  {
+    "pokemon": "infernape",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/infernape/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485480.4802542
+  },
+  {
+    "pokemon": "empoleon",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/empoleon/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485483.41208
+  },
+  {
+    "pokemon": "staraptor",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/staraptor/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485486.3145454
+  },
+  {
+    "pokemon": "luxray",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/luxray/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485489.0037956
+  },
+  {
+    "pokemon": "roserade",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/roserade/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485492.1952662
+  },
+  {
+    "pokemon": "rampardos",
+    "tier": "OU",
+    "gen": "sv",
+    "url": "https://www.smogon.com/dex/sv/pokemon/rampardos/",
+    "content": "PAGE_TEXT: Loading...",
+    "timestamp": 1777485495.2699065
+  }
+]

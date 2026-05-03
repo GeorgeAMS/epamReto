@@ -1,0 +1,422 @@
+[
+  {
+    "id": 1,
+    "question": "¿Qué STAB le da a Garchomp usar Earthquake?",
+    "category": "stats",
+    "ground_truth": "Garchomp es tipo Tierra/Dragón; Earthquake es tipo Tierra, así que recibe STAB ×1.5 (o ×2.0 solo con Adaptability, que Garchomp no tiene por defecto).",
+    "contexts": [
+      "STAB (Same-Type Attack Bonus) multiplica el daño del movimiento por 1.5 si el tipo del movimiento coincide con uno de los tipos del atacante.",
+      "Garchomp es Pokémon de tipos Dragón y Tierra. Earthquake es un movimiento de tipo Tierra.",
+      "Sin habilidades especiales, el multiplicador STAB estándar en generaciones recientes es 1.5×."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 2,
+    "question": "How much damage does max-roll Garchomp Earthquake do to standard defensive Blissey?",
+    "category": "calc",
+    "ground_truth": "With random_factor 1.0 (max roll), the damage is 382, with a possible range of 325–382 HP.",
+    "contexts": [
+      "Damage uses the Gen IX formula: level, stats, base power, modifiers (STAB, type effectiveness, weather, etc.), and a random factor between 0.85 and 1.0.",
+      "Garchomp commonly runs physical investment; Blissey often maximizes HP and special defense.",
+      "Ground is neutral against Normal-type defenders; Garchomp gains STAB on Earthquake."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "garchomp_earthquake_blissey_max",
+      "expect_damage": 382,
+      "expect_range": [325, 382]
+    }
+  },
+  {
+    "id": 3,
+    "question": "¿Por qué Ghost-type moves don't affect Normal types en combate?",
+    "category": "stats",
+    "ground_truth": "Los movimientos tipo Fantasma son ineficaces (inmunidad) contra Pokémon tipo Normal: el daño efectivo es 0 salvo habilidades que ignoren inmunidades.",
+    "contexts": [
+      "Type chart: Ghost deals 0× damage to Normal in standard Pokémon rules.",
+      "Normal in turn hits Ghost for 0× unless Foresight, Odor Sleuth, or Scrappy-style effects apply.",
+      "Immunities are applied before other modifiers in damage calculation."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 4,
+    "question": "Damage: Garchomp Ice Fang vs offensively invested Salamence, max roll?",
+    "category": "calc",
+    "ground_truth": "Ice Fang is super-effective on Dragon/Flying; expect a high physical roll. Max-roll damage is 408 (range 346–408).",
+    "contexts": [
+      "Ice hits Flying for super-effective (2×) and Dragon for super-effective (2×); combined on Dragon/Flying yields 4× before other modifiers.",
+      "Ice Fang may flinch but damage calc focuses on power and modifiers first.",
+      "Salamence keeps weaker physical bulk than many walls."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "garchomp_ice_fang_salamence_max",
+      "expect_damage": 408,
+      "expect_range": [346, 408]
+    }
+  },
+  {
+    "id": 5,
+    "question": "What typing is Charizard and how does Fire interact with Grass/Poison Venusaur?",
+    "category": "stats",
+    "ground_truth": "Charizard is Fire/Flying. Fire moves are super-effective against Grass (2×) and neutral against Poison (1×), so overall about 2× against Grass/Poison.",
+    "contexts": [
+      "Dual typings multiply matchup effectiveness: each type factor applies.",
+      "Fire resists Fire, Grass, Ice, Fairy; weak to Water, Electric, Rock.",
+      "Venusaur is Grass/Poison and often used as a special tank."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 6,
+    "question": "Timid Charizard Flamethrower vs Modest Venusaur, clear weather, max roll?",
+    "category": "calc",
+    "ground_truth": "Special Fire vs Grass/Poison with STAB: max damage 309 (range 262–309).",
+    "contexts": [
+      "Flamethrower has 90 base power and is special.",
+      "No Sun in this baseline: Fire moves use standard modifiers.",
+      "STAB applies when move type matches attacker typing (Fire/Flying uses Fire STAB on Flamethrower)."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "charizard_flamethrower_venusaur_max",
+      "expect_damage": 309,
+      "expect_range": [262, 309]
+    }
+  },
+  {
+    "id": 7,
+    "question": "Same matchup Charizard Flamethrower vs Venusaur but under harsh sunlight?",
+    "category": "calc",
+    "ground_truth": "Sun boosts Fire-type moves; max-roll damage becomes 463 (range 393–463).",
+    "contexts": [
+      "Harsh sunlight multiplies Fire-type attacks in modern formulas unless cancelled by other effects.",
+      "Water moves are weakened in sun; Fire moves strengthen.",
+      "Venusaur may run Thick Fat in some formats but not in our canonical fixture."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "charizard_flamethrower_venusaur_sun_max",
+      "expect_damage": 463,
+      "expect_range": [393, 463]
+    }
+  },
+  {
+    "id": 8,
+    "question": "¿Qué región introduce a Oshawott como inicial de agua?",
+    "category": "lore",
+    "ground_truth": "Oshawott es el inicial Agua de la quinta generación, en la región Teselia (Unova).",
+    "contexts": [
+      "Generation V starters: Snivy, Tepig, Oshawott.",
+      "Unova is inspired by New York metropolitan aesthetics in early route design.",
+      "Professor Juniper distributes starter Pokémon in Black and White."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 9,
+    "question": "Modest Venusaur Hydro Pump vs Timid Charizard in rain, max roll?",
+    "category": "calc",
+    "ground_truth": "Rain powers Water moves; Hydro Pump reaches 447 damage max (379–447).",
+    "contexts": [
+      "Hydro Pump is special with 110 base power.",
+      "Rain traditionally boosts Water-type attack damage while weakening Fire.",
+      "Charizard is weak to Rock and Electric; Water hits Fire super-effectively."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "venusaur_hydro_charizard_rain_max",
+      "expect_damage": 447,
+      "expect_range": [379, 447]
+    }
+  },
+  {
+    "id": 10,
+    "question": "Venusaur Hydro Pump vs Charizard with no weather, max roll?",
+    "category": "calc",
+    "ground_truth": "Without rain, Hydro Pump still hits Fire/Flying super-effectively: 298 max (253–298).",
+    "contexts": [
+      "Water vs Fire is 2×; Water vs Flying is neutral; combined yields 2× on Fire/Flying.",
+      "Investment on Venusaur favors special attack in the canonical fixture.",
+      "Field conditions default to clear in the baseline battle."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "venusaur_hydro_charizard_max",
+      "expect_damage": 298,
+      "expect_range": [253, 298]
+    }
+  },
+  {
+    "id": 11,
+    "question": "Timid Gengar Thunderbolt vs defensive Blissey, max roll?",
+    "category": "calc",
+    "ground_truth": "Electric is neutral vs Normal; expect 82 damage at max roll (69–82).",
+    "contexts": [
+      "Thunderbolt is special, 90 BP.",
+      "Blissey has enormous special bulk and HP.",
+      "Ghost/Poison Gengar uses special moves well with high SpA."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "gengar_thunderbolt_blissey_max",
+      "expect_damage": 82,
+      "expect_range": [69, 82]
+    }
+  },
+  {
+    "id": 12,
+    "question": "Porygon-Z with Adaptability using Hyper Voice vs Blissey, max roll?",
+    "category": "calc",
+    "ground_truth": "Adaptability raises STAB from 1.5 to 2.0 on Normal moves; Hyper Voice yields 184 max (156–184).",
+    "contexts": [
+      "Adaptability doubles STAB multiplier relative to standard for matching types.",
+      "Hyper Voice is a 90 BP special Normal move in our canonical fixture.",
+      "Porygon-Z has high special attack but frail defenses."
+    ],
+    "correctness": {
+      "type": "damage_calculator",
+      "fixture": "porygon_hyper_voice_blissey_max",
+      "expect_damage": 184,
+      "expect_range": [156, 184]
+    }
+  },
+  {
+    "id": 13,
+    "question": "Name one common OU role for Ferrothorn and why entry hazards matter.",
+    "category": "strategy",
+    "ground_truth": "Ferrothorn often acts as a defensive hazard setter (Stealth Rock, Spikes) because of strong physical bulk and Iron Barbs chip; hazards punish switches.",
+    "contexts": [
+      "OU (OverUsed) is a Smogon tier balancing strong but non-legendary staples.",
+      "Hazards deal damage or chip when opponents switch, shaping long games.",
+      "Grass/Steel typing gives key resistances but a Fire weakness."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 14,
+    "question": "¿Cuánto daño hace Garchomp con Earthquake contra Blissey defensiva estándar? (máximo del rango)",
+    "category": "calc",
+    "ground_truth": "Con random_factor 1.0, el máximo es 382 HP de daño (rango 325–382).",
+    "contexts": [
+      "Los informes del calculator_agent incluyen rango y porcentajes de HP del defensor.",
+      "La fórmula Gen IX usa factor aleatorio 0.85–1.0 salvo que se fije.",
+      "Garchomp tiene alto Ataque base; Earthquake tiene 100 de poder."
+    ],
+    "correctness": {
+      "type": "orchestrator",
+      "fixture": "garchomp_earthquake_blissey_max",
+      "must_contain": ["382", "Blissey", "Earthquake"]
+    }
+  },
+  {
+    "id": 15,
+    "question": "Explain briefly what EVs cap at per stat in modern VGC.",
+    "category": "strategy",
+    "ground_truth": "A Pokémon can distribute up to 510 EVs total with a maximum of 252 EVs in any one stat in Gen IX-style rules used competitively.",
+    "contexts": [
+      "Effort Values modify final stats at level 100.",
+      "Competitive builders optimize 252/252/4 spreads often.",
+      "VGC is doubles format with item and move restrictions per regulation."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 16,
+    "question": "Who is the protagonist's rival in Pokémon Ruby/Sapphire near the start?",
+    "category": "lore",
+    "ground_truth": "The main rival is Brendan if you play May, or May if you play Brendan—both appear as neighbor rivals in Hoenn.",
+    "contexts": [
+      "Hoenn features Professor Birch and two playable protagonists.",
+      "Rival teams mirror starter typings for early battles.",
+      "The story involves Team Aqua and Team Magma environmental conflicts."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 17,
+    "question": "What item doubles Speed on the first turn of battle for many sweepers?",
+    "category": "strategy",
+    "ground_truth": "Choice Scarf multiplies Speed by 1.5× while locking the holder into one move until switched.",
+    "contexts": [
+      "Choice items trade flexibility for a large stat boost.",
+      "Scarf users often pivot with U-turn or Volt Switch.",
+      "Competitive builds pair scarf with coverage moves carefully."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 18,
+    "question": "¿Qué tipo es efectivo contra Agua + Volador a la vez?",
+    "category": "stats",
+    "ground_truth": "El tipo Eléctrico suele ser 4× contra Agua/Volador porque es supereficaz contra ambos tipos (2× × 2×).",
+    "contexts": [
+      "Dual-type matchups multiply individual type factors.",
+      "Water/Flying is common on Pokémon like Gyarados before Mega evolution changes.",
+      "Rock moves can also be threatening due to Flying weakness."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 19,
+    "question": "Damage check: ice fang salamence from chomp again for regression?",
+    "category": "calc",
+    "ground_truth": "408 max damage; range 346–408.",
+    "contexts": [
+      "Regression tests repeat canonical battles to catch formula drift.",
+      "Ice coverage is standard on many Dragon attackers.",
+      "Salamence's Intimidate is ignored in raw damage fixtures unless modeled."
+    ],
+    "correctness": {
+      "type": "orchestrator",
+      "fixture": "garchomp_ice_fang_salamence_max",
+      "must_contain": ["408", "Salamence", "Ice Fang"]
+    }
+  },
+  {
+    "id": 20,
+    "question": "What Ability halves Fire and Ice damage in some Generations?",
+    "category": "stats",
+    "ground_truth": "Thick Fat halves damage from Fire-type and Ice-type moves.",
+    "contexts": [
+      "Abilities can modify type effectiveness indirectly via damage multipliers.",
+      "Thick Fat appears on Pokémon like Miltank and some Venusaur forms depending on game.",
+      "Our Venusaur canonical build uses standard ability fixtures elsewhere."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 21,
+    "question": "Why might you run Rapid Spin or Defog in OU?",
+    "category": "strategy",
+    "ground_truth": "Both remove hazards (Spikes, Stealth Rock layers, etc.) or lower evasion in Defog's case—keeping your switches healthier.",
+    "contexts": [
+      "Entry hazard stacking punishes teams without removal.",
+      "OU balances offensive pressure with defensive pivoting.",
+      "Some Pokémon get both but choose one slot due to moveset limits."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 22,
+    "question": "¿Cuál es el daño máximo de Flamethrower de Charizard a Venusaur bajo sol fuerte?",
+    "category": "calc",
+    "ground_truth": "463 HP máximo; rango aproximado 393–463.",
+    "contexts": [
+      "El clima modifica multiplicadores de tipo de movimiento activados por habilidades o movimientos como Sunny Day.",
+      "Charizard es especial ofensivo en el fixture canónico.",
+      "Venusaur puede beneficiarse del sol con Chlorophyll en otros sets."
+    ],
+    "correctness": {
+      "type": "orchestrator",
+      "fixture": "charizard_flamethrower_venusaur_sun_max",
+      "must_contain": ["463", "Charizard", "Venusaur"]
+    }
+  },
+  {
+    "id": 23,
+    "question": "Who is the Champion in Paldea's Pokémon Scarlet/Violet base story?",
+    "category": "lore",
+    "ground_truth": "Geeta holds the title of Champion in Paldea for much of the campaign; the player eventually challenges the Elite Four and Champion circuit.",
+    "contexts": [
+      "Paldea is inspired by Iberia with open-world progression.",
+      "Victory Road culminates in League assessment tests in Gen IX.",
+      "Area Zero ties late-game lore about paradox Pokémon."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 24,
+    "question": "Mixed question: state Garchomp's key attacking stat and one common STAB physical move.",
+    "category": "mixed",
+    "ground_truth": "Garchomp leans on high Attack (base 130) and often runs Earthquake or Dragon-type physical coverage for STAB.",
+    "contexts": [
+      "Pseudo-legendary dragons offer strong speed and offense.",
+      "Rough Skin or Sand Veil historically define competitive sets before ability bans.",
+      "Items like Life Orb or Choice Band amplify damage output."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 25,
+    "question": "How does Terastallizing change damage typing at snapshot time?",
+    "category": "strategy",
+    "ground_truth": "Terastallizing lets a Pokémon change its offensive Tera Type for STAB calculations on moves while keeping defensive typing until the swap resolves per battle rules (simplified; exact rules vary by format).",
+    "contexts": [
+      "Gen IX introduced Tera types separate from base typings.",
+      "Competitive VGC regulations rotate allowed Tera users.",
+      "STAB bonuses can change when Terastallization matches move type."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 26,
+    "question": "Benchmark: Gen Timid Gengar Thunderbolt vs Blissey wall.",
+    "category": "calc",
+    "ground_truth": "82 damage at max random roll; range 69–82.",
+    "contexts": [
+      "Special walls like Blissey define tiering benchmarks.",
+      "Thunderbolt coverage hits Water/Flying common threats.",
+      "Choice Specs Gengar would exceed these numbers."
+    ],
+    "correctness": {
+      "type": "orchestrator",
+      "fixture": "gengar_thunderbolt_blissey_max",
+      "must_contain": ["82", "Thunderbolt", "Blissey"]
+    }
+  },
+  {
+    "id": 27,
+    "question": "What is the type of the move Shadow Ball?",
+    "category": "stats",
+    "ground_truth": "Shadow Ball is a Ghost-type special move.",
+    "contexts": [
+      "Ghost coverage hits Psychic and Ghost types super-effectively.",
+      "Special attacking Ghosts like Gengar use it frequently.",
+      "Some formats ban King's Rock interactions with multi-hit moves separately."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 28,
+    "question": "Why is Speed tie order important in doubles?",
+    "category": "strategy",
+    "ground_truth": "Turn order decides Who moves first when stats tie after modifiers—a coin flip or PRNG tie can swing Protect reads or knockouts.",
+    "contexts": [
+      "Doubles amplifies synergy between partners.",
+      "Trick Room inverts speed ordering entirely.",
+      "Tailwind temporarily doubles team Speed for several turns."
+    ],
+    "correctness": null
+  },
+  {
+    "id": 29,
+    "question": "Rain-boosted Hydro from Venusaur to Charizard — recheck numbers?",
+    "category": "calc",
+    "ground_truth": "447 on max roll with rain (379–447).",
+    "contexts": [
+      "Weather setters like Pelipper enable rain cores.",
+      "Grass/ Poison typings resist common powder moves.",
+      "Charizard's 4× Rock weakness is separate from this calculation."
+    ],
+    "correctness": {
+      "type": "orchestrator",
+      "fixture": "venusaur_hydro_charizard_rain_max",
+      "must_contain": ["447", "Hydro Pump", "Charizard"]
+    }
+  },
+  {
+    "id": 30,
+    "question": "Closing sanity: list the five orchestrator intents this project uses.",
+    "category": "mixed",
+    "ground_truth": "stats, calc, lore, strategy, mixed.",
+    "contexts": [
+      "The orchestrator classifies queries before dispatching specialist agents.",
+      "Calculator intent routes to deterministic damage math without LLM guessing.",
+      "Verifier and synthesizer nodes normalize outputs for the API/UI."
+    ],
+    "correctness": null
+  }
+]

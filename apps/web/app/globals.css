@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --pokedex-yellow: #ffd700;
+  --pokedex-blue: #3b4cca;
+  --pokedex-red: #ff0000;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+body {
+  @apply min-h-screen antialiased;
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Markdown chat tweaks */
+.arcana-markdown a {
+  @apply text-arcana-gold underline-offset-2 hover:underline;
+}
+
+.arcana-markdown h2 {
+  @apply mt-4 text-lg font-semibold text-arcana-gold;
+}
+
+.arcana-markdown ul {
+  @apply list-disc pl-5;
+}
+
+.arcana-markdown code {
+  @apply rounded bg-arcana-surface px-1 font-mono text-sm text-amber-100;
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.agent-badge {
+  @apply rounded-full px-3 py-1 text-xs font-medium;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Pokemon Type Badges */
+.type-normal { @apply bg-gray-400 text-gray-900; }
+.type-fire { @apply bg-orange-500 text-white; }
+.type-water { @apply bg-blue-500 text-white; }
+.type-electric { @apply bg-yellow-400 text-gray-900; }
+.type-grass { @apply bg-green-500 text-white; }
+.type-ice { @apply bg-cyan-300 text-gray-900; }
+.type-fighting { @apply bg-red-700 text-white; }
+.type-poison { @apply bg-purple-500 text-white; }
+.type-ground { @apply bg-yellow-700 text-white; }
+.type-flying { @apply bg-indigo-300 text-gray-900; }
+.type-psychic { @apply bg-pink-500 text-white; }
+.type-bug { @apply bg-lime-500 text-gray-900; }
+.type-rock { @apply bg-yellow-800 text-white; }
+.type-ghost { @apply bg-purple-700 text-white; }
+.type-dragon { @apply bg-indigo-700 text-white; }
+.type-dark { @apply bg-gray-800 text-white; }
+.type-steel { @apply bg-gray-500 text-white; }
+.type-fairy { @apply bg-pink-300 text-gray-900; }

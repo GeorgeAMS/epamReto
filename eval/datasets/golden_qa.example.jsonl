@@ -1,0 +1,4 @@
+{"id": "Q001", "question": "¿Cuál es el BST de Garchomp?", "expected_keywords": ["600", "BST"], "intent": "stats"}
+{"id": "Q002", "question": "Calcula el daño máximo de Earthquake de Garchomp Lv100 252 Atk Adamant contra Salamence Naive 0 Def.", "expected_keywords": ["daño", "Earthquake"], "intent": "calc"}
+{"id": "Q003", "question": "¿Qué Pokémon resiste mejor a Dragapult en OU actual?", "expected_keywords": ["Dragapult", "OU"], "intent": "strategy"}
+{"id": "Q004", "question": "Cuéntame sobre la rivalidad entre Red y Blue en el anime.", "expected_keywords": ["Red", "Blue"], "intent": "lore"}
