@@ -18,7 +18,7 @@ from uuid import uuid4
 from qdrant_client import QdrantClient
 from qdrant_client.http import models as qm
 
-from infrastructure.embeddings import OllamaEmbedder, get_embedder
+from infrastructure.embeddings import GeminiEmbedder, OllamaEmbedder, get_embedder
 from infrastructure.settings import get_settings
 from shared.errors import InfrastructureError
 from shared.logging import get_logger
@@ -36,6 +36,8 @@ class SearchHit:
 
 
 class VectorStore:
+    _Embedder = GeminiEmbedder | OllamaEmbedder
+
     """Cliente Qdrant tipado.
 
     Cada documento ingresado debe portar al menos:
@@ -129,7 +131,7 @@ class VectorStore:
         texts: list[str],
         payloads: list[dict[str, Any]],
         ids: list[str] | None = None,
-        embedder: OllamaEmbedder | None = None,
+        embedder: _Embedder | None = None,
     ) -> list[str]:
         """Embebe ``texts`` y los guarda en Qdrant en un solo paso.
 
@@ -164,7 +166,7 @@ class VectorStore:
         query: str,
         top_k: int = 5,
         filters: dict[str, Any] | None = None,
-        embedder: OllamaEmbedder | None = None,
+        embedder: _Embedder | None = None,
     ) -> list[SearchHit]:
         """Búsqueda por texto: embebe la query y delega en ``search``."""
         emb = embedder or get_embedder()
@@ -182,7 +184,7 @@ class VectorStore:
         query: str,
         top_k: int = 5,
         must_filters: dict[str, Any] | None = None,
-        embedder: OllamaEmbedder | None = None,
+        embedder: _Embedder | None = None,
     ) -> list[SearchHit]:
         """Mismo flujo que ``search_text`` con énfasis semántico de "filtro obligatorio".
 

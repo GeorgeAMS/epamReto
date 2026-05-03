@@ -8,7 +8,6 @@ dependencies = [
     "pokedex-domain",
     "pokedex-infrastructure",
     "pydantic>=2.9,<3",
-    "anthropic>=0.39,<1",
     "langgraph>=0.2.50,<0.4",
     "langchain-core>=0.3.20,<0.4",
 ]

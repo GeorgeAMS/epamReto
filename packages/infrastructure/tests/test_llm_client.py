@@ -1,4 +1,4 @@
-"""Tests del LLMClient. Modo offline (sin ANTHROPIC_API_KEY) — no toca red.
+"""Tests del LLMClient. Modo offline (sin GROQ_API_KEY) — no toca red.
 
 El test importante: ``stream`` y ``complete`` siguen funcionando con texto
 determinístico para que la API arranque en demos sin créditos.

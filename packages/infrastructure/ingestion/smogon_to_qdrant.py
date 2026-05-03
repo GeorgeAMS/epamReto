@@ -9,6 +9,9 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct
 from structlog import get_logger
 
+from infrastructure.embeddings import get_embedder
+from infrastructure.settings import get_settings
+
 logger = get_logger()
 
 OU_TOP_100 = [
@@ -34,19 +37,11 @@ OU_TOP_100 = [
     "empoleon", "staraptor", "luxray", "roserade", "rampardos",
 ]
 
-def _embed_ollama(text: str, *, base_url: str = "http://localhost:11434") -> list[float]:
-    resp = requests.post(
-        f"{base_url}/api/embeddings",
-        json={"model": "nomic-embed-text", "prompt": text},
-        timeout=60,
-    )
-    resp.raise_for_status()
-    return list(resp.json()["embedding"])
-
-
 def load_smogon_to_qdrant() -> int:
-    """Carga análisis Smogon a `pokedex_strategy` con embeddings Ollama."""
-    client = QdrantClient(url="http://localhost:6333")
+    """Carga análisis Smogon a `pokedex_strategy` con embedder configurado."""
+    settings = get_settings()
+    client = QdrantClient(url=settings.qdrant_url)
+    embedder = get_embedder()
 
     smogon_file = Path("data/raw/smogon/smogon_ou_full.json")
     raw_analyses = json.loads(smogon_file.read_text(encoding="utf-8"))
@@ -68,7 +63,7 @@ def load_smogon_to_qdrant() -> int:
             f"{analysis['content']}"
         )
         logger.info("smogon.embedding", index=i, total=len(analyses), pokemon=analysis["pokemon"])
-        embedding = _embed_ollama(text)
+        embedding = embedder.embed(text)
 
         points.append(
             PointStruct(

@@ -1,16 +1,4 @@
-"""Cliente de embeddings Ollama con cache local + fallback determinístico.
-
-Reglas:
-- Modelo configurable vía ``settings.embedding_model``
-  (default ``nomic-embed-text``, dim 768).
-- Cache persistente con diskcache: la **misma string** siempre devuelve el
-  mismo vector, evitando recomputo durante demos repetidas.
-- Si Ollama no responde se cae a un embedding determinístico (hash
-  → vector pseudoaleatorio normalizado). Permite que la pipeline RAG corra
-  end-to-end sin la API durante desarrollo.
-
-Diseñado pensando en que el `vector_store.upsert_documents` lo consume.
-"""
+"""Cliente de embeddings con Gemini/Ollama + fallback determinístico."""
 
 from __future__ import annotations
 
@@ -196,20 +184,155 @@ class OllamaEmbedder:
         return vectors
 
 
+class GeminiEmbedder:
+    """Embedder cloud vía Gemini API (`models/*:embedContent`)."""
+
+    def __init__(
+        self,
+        *,
+        api_key: str | None = None,
+        model: str | None = None,
+        dim: int | None = None,
+        cache_path: str | None = None,
+    ) -> None:
+        settings = get_settings()
+        self._api_key = api_key or settings.gemini_api_key
+        self._model = model or settings.embedding_model
+        self._dim = dim or settings.embedding_dim
+        self._base_url = "https://generativelanguage.googleapis.com/v1beta"
+
+        cache_dir = Path(cache_path or settings.pokeapi_cache_path).parent
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        self._cache = diskcache.Cache(str(cache_dir / "embeddings-disk"))
+
+    @property
+    def is_offline(self) -> bool:
+        return not bool(self._api_key)
+
+    @property
+    def dim(self) -> int:
+        return self._dim
+
+    @property
+    def model(self) -> str:
+        return self._model
+
+    def _cache_key(self, text: str) -> str:
+        h = hashlib.sha1(text.encode("utf-8")).hexdigest()
+        return f"gemini:{self._model}:{self._dim}:{h}"
+
+    def embed(self, text: str) -> list[float]:
+        if not text or not text.strip():
+            raise InfrastructureError("Texto vacío no se puede embeber", details={"len": len(text)})
+        cached = self._cache.get(self._cache_key(text))
+        if cached is not None:
+            return list(cached)  # type: ignore[arg-type]
+        try:
+            vector = self._embed_remote([text])[0]
+        except InfrastructureError:
+            vector = _deterministic_embedding(text, self._dim)
+        self._cache.set(self._cache_key(text), vector)
+        return vector
+
+    def embed_batch(self, texts: Iterable[str]) -> list[list[float]]:
+        items = list(texts)
+        if not items:
+            return []
+        cached_results: list[list[float] | None] = []
+        miss_indices: list[int] = []
+        miss_texts: list[str] = []
+        for idx, t in enumerate(items):
+            if not t or not t.strip():
+                raise InfrastructureError("Texto vacío no se puede embeber", details={"index": idx})
+            hit = self._cache.get(self._cache_key(t))
+            if hit is None:
+                cached_results.append(None)
+                miss_indices.append(idx)
+                miss_texts.append(t)
+            else:
+                cached_results.append(list(hit))  # type: ignore[arg-type]
+        if miss_texts:
+            try:
+                new_vectors = self._embed_remote(miss_texts)
+            except InfrastructureError:
+                new_vectors = [_deterministic_embedding(t, self._dim) for t in miss_texts]
+            for local_i, original_i in enumerate(miss_indices):
+                vec = new_vectors[local_i]
+                cached_results[original_i] = vec
+                self._cache.set(self._cache_key(miss_texts[local_i]), vec)
+        return [v for v in cached_results if v is not None]
+
+    @retry(
+        reraise=True,
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=0.6, min=0.6, max=4),
+        retry=retry_if_exception_type(InfrastructureError),
+    )
+    def _embed_remote(self, texts: list[str]) -> list[list[float]]:
+        if not self._api_key:
+            raise InfrastructureError("Gemini API key no configurada", details={"hint": "GEMINI_API_KEY"})
+        vectors: list[list[float]] = []
+        for t in texts:
+            try:
+                response = requests.post(
+                    f"{self._base_url}/models/{self._model}:embedContent",
+                    params={"key": self._api_key},
+                    json={
+                        "content": {"parts": [{"text": t}]},
+                        "outputDimensionality": self._dim,
+                    },
+                    timeout=60,
+                )
+                response.raise_for_status()
+                payload = response.json()
+                values = payload.get("embedding", {}).get("values", [])
+                if not isinstance(values, list) or not values:
+                    raise InfrastructureError(
+                        "Gemini devolvió embedding vacío",
+                        details={"model": self._model},
+                    )
+                vectors.append([float(x) for x in values])
+            except InfrastructureError:
+                raise
+            except Exception as exc:
+                raise InfrastructureError(
+                    "Gemini embeddings fallo",
+                    details={"model": self._model, "error": str(exc)},
+                ) from exc
+        if vectors and any(len(v) != self._dim for v in vectors):
+            log.warning(
+                "embeddings.dim_mismatch",
+                expected=self._dim,
+                got=[len(v) for v in vectors[:1]],
+            )
+        return vectors
+
+
 # ---------------------------------------------------------------------------
 # Singleton
 # ---------------------------------------------------------------------------
 
 
-_embedder: OllamaEmbedder | None = None
+_embedder: GeminiEmbedder | OllamaEmbedder | None = None
 
 
-def get_embedder() -> OllamaEmbedder:
+def get_embedder() -> GeminiEmbedder | OllamaEmbedder:
     global _embedder
     if _embedder is None:
-        _embedder = OllamaEmbedder()
+        settings = get_settings()
+        provider = settings.embedding_provider.strip().lower()
+        if provider == "gemini":
+            _embedder = GeminiEmbedder()
+        elif provider == "ollama":
+            _embedder = OllamaEmbedder()
+        else:
+            raise InfrastructureError(
+                "EMBEDDING_PROVIDER inválido",
+                details={"provider": provider, "valid": ["gemini", "ollama"]},
+            )
         log.info(
             "embedder.ready",
+            provider=("gemini" if isinstance(_embedder, GeminiEmbedder) else "ollama"),
             offline=_embedder.is_offline,
             model=_embedder.model,
             dim=_embedder.dim,
@@ -217,4 +340,4 @@ def get_embedder() -> OllamaEmbedder:
     return _embedder
 
 
-__all__ = ["OllamaEmbedder", "get_embedder"]
+__all__ = ["GeminiEmbedder", "OllamaEmbedder", "get_embedder"]

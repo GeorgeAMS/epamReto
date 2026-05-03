@@ -1,11 +1,10 @@
-"""Cliente LLM unificado con routing Groq + Ollama.
+"""Cliente LLM unificado con Groq.
 
-Reglas del proyecto:
-- ``LLMRole.BRAIN`` -> Groq (llama-3.3-70b-versatile), con rate limit local.
-- ``LLMRole.LIGHT`` -> Ollama local (llama3.2:3b) para clasificación rápida.
-- Streaming real en ambos proveedores (SDK/event stream).
-- ``complete_with_tools`` soporta function-calling con Groq; en Ollama se
-  degrada a ``complete`` sin tool calls (el orchestrator ya tiene heurística).
+Reglas:
+- ``LLMRole.BRAIN`` -> modelo principal para síntesis/respuesta final.
+- ``LLMRole.LIGHT`` -> modelo ligero para clasificación/tool-use.
+- Streaming real vía SDK Groq.
+- ``complete_with_tools`` usa function-calling estilo OpenAI.
 """
 
 from __future__ import annotations
@@ -19,7 +18,6 @@ from enum import Enum
 from functools import wraps
 from typing import Any
 
-import requests
 from pydantic import BaseModel, ConfigDict, Field
 from tenacity import (
     retry,
@@ -62,13 +60,11 @@ def rate_limit(min_interval: float = 0.5):
 class LLMRole(str, Enum):
     """Selector lógico del modelo a usar.
 
-    El lenguaje del proyecto: cualquier agente pide ``BRAIN`` o ``LIGHT`` —
-    nadie referencia el slug exacto del modelo, así Anthropic puede renombrarlos
-    sin tocar la capa de agentes.
+    El lenguaje del proyecto: cualquier agente pide ``BRAIN`` o ``LIGHT``.
     """
 
-    BRAIN = "brain"   # Groq llama-3.3-70b-versatile.
-    LIGHT = "light"   # Ollama llama3.2:3b.
+    BRAIN = "brain"
+    LIGHT = "light"
 
 
 class LLMMessage(BaseModel):
@@ -115,9 +111,11 @@ def _offline_text(prompt: str, role: LLMRole) -> str:
     tests verifiquen contratos sin costo en créditos.
     """
     digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:8]
+    snippet = " ".join(prompt.strip().split())[:600]
     return (
         f"[offline:{role.value}:{digest}] "
-        "Respuesta determinística -- configura GROQ_API_KEY para activar el LLM real."
+        "Respuesta determinística -- configura GROQ_API_KEY para activar el LLM real. "
+        f"Prompt: {snippet}"
     )
 
 
@@ -127,7 +125,7 @@ def _offline_text(prompt: str, role: LLMRole) -> str:
 
 
 class LLMClient:
-    """Cliente unificado con Groq (brain) y Ollama (light)."""
+    """Cliente unificado Groq."""
 
     def __init__(
         self,
@@ -135,15 +133,13 @@ class LLMClient:
         api_key: str | None = None,
         brain_model: str | None = None,
         light_model: str | None = None,
-        ollama_base_url: str | None = None,
     ) -> None:
         settings = get_settings()
         self._api_key = api_key if api_key is not None else settings.groq_api_key
         self._brain_model = brain_model or settings.llm_brain_model
         self._light_model = light_model or settings.llm_light_model
-        self._ollama_base_url = ollama_base_url or settings.ollama_base_url
         self._sdk: Any | None = None  # Groq SDK lazy.
-        self._last_groq_call = 0.0
+        self._last_call = 0.0
         self._min_interval_seconds = 0.5
 
     # --- helpers internos -------------------------------------------------
@@ -169,11 +165,11 @@ class LLMClient:
         self._sdk = Groq(api_key=self._api_key)
         return self._sdk
 
-    def _groq_rate_limit(self) -> None:
-        elapsed = time.time() - self._last_groq_call
+    def _rate_limit(self) -> None:
+        elapsed = time.time() - self._last_call
         if elapsed < self._min_interval_seconds:
             time.sleep(self._min_interval_seconds - elapsed)
-        self._last_groq_call = time.time()
+        self._last_call = time.time()
 
     @rate_limit(min_interval=0.5)
     def invoke(self, messages: list[dict[str, str]], max_tokens: int = 150, temperature: float = 0.3, timeout: int = 3) -> Any:
@@ -181,17 +177,17 @@ class LLMClient:
         if self.is_offline:
             raise InfrastructureError("Groq API error", details={"error": "offline mode"})
         sdk = self._ensure_sdk()
+        model = self._model_for(LLMRole.BRAIN)
         try:
             response = sdk.chat.completions.create(
-                model=self._brain_model,
+                model=model,
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=temperature,
-                timeout=timeout,
             )
-            return response.choices[0].message
+            return response
         except Exception as e:
-            raise InfrastructureError("Groq API error", details={"error": str(e)}) from e
+            raise InfrastructureError("Groq API error", details={"error": str(e), "timeout": timeout}) from e
 
     @staticmethod
     def _build_history(
@@ -205,6 +201,7 @@ class LLMClient:
         msgs.append({"role": "user", "content": prompt})
         return msgs
 
+    @staticmethod
     @staticmethod
     def _to_openai_tools(tools: list[dict[str, Any]]) -> list[dict[str, Any]]:
         converted: list[dict[str, Any]] = []
@@ -249,30 +246,8 @@ class LLMClient:
         if self.is_offline:
             return LLMResponse(text=_offline_text(prompt, role), model=f"{model}:offline")
 
-        if role == LLMRole.LIGHT:
-            messages = self._build_history(prompt, history)
-            try:
-                resp = requests.post(
-                    f"{self._ollama_base_url}/api/chat",
-                    json={
-                        "model": model,
-                        "messages": messages,
-                        "stream": False,
-                        "options": {"temperature": opts.temperature},
-                    },
-                    timeout=90,
-                )
-                resp.raise_for_status()
-                text = resp.json().get("message", {}).get("content", "")
-            except Exception as exc:
-                raise InfrastructureError(
-                    "Ollama completion fallo",
-                    details={"model": model, "error": str(exc)},
-                ) from exc
-            return LLMResponse(text=text, model=f"{model}:ollama")
-
         sdk = self._ensure_sdk()
-        self._groq_rate_limit()
+        self._rate_limit()
         try:
             msgs = self._build_history(prompt, history)
             if opts.system:
@@ -280,8 +255,8 @@ class LLMClient:
             resp = sdk.chat.completions.create(
                 model=model,
                 messages=msgs,
-                temperature=opts.temperature,
                 max_tokens=opts.max_tokens,
+                temperature=opts.temperature,
             )
             msg = resp.choices[0].message
             usage = getattr(resp, "usage", None)
@@ -308,10 +283,8 @@ class LLMClient:
     ) -> Iterator[str]:
         """Streaming **real** de tokens (no simulado).
 
-        Implementación: usa ``client.messages.stream(...)`` del SDK Anthropic
-        con el context manager — yieldea cada delta de texto a medida que
-        llega. En offline tokeniza por carácter el offline_text para que la UI
-        siga animándose en demos sin créditos.
+        En offline tokeniza por carácter el offline_text para que la UI siga
+        animándose en demos sin créditos.
         """
         opts = options or LLMOptions()
         model = self._model_for(role)
@@ -321,37 +294,8 @@ class LLMClient:
             yield from text  # carácter a carácter: el SSE de la API tokeniza igual
             return
 
-        if role == LLMRole.LIGHT:
-            messages = self._build_history(prompt, history)
-            try:
-                with requests.post(
-                    f"{self._ollama_base_url}/api/chat",
-                    json={
-                        "model": model,
-                        "messages": messages,
-                        "stream": True,
-                        "options": {"temperature": opts.temperature},
-                    },
-                    timeout=120,
-                    stream=True,
-                ) as resp:
-                    resp.raise_for_status()
-                    for line in resp.iter_lines():
-                        if not line:
-                            continue
-                        payload = json.loads(line.decode("utf-8"))
-                        token = payload.get("message", {}).get("content", "")
-                        if token:
-                            yield token
-            except Exception as exc:
-                raise InfrastructureError(
-                    "Ollama streaming fallo",
-                    details={"model": model, "error": str(exc)},
-                ) from exc
-            return
-
         sdk = self._ensure_sdk()
-        self._groq_rate_limit()
+        self._rate_limit()
         try:
             msgs = self._build_history(prompt, history)
             if opts.system:
@@ -359,8 +303,8 @@ class LLMClient:
             stream = sdk.chat.completions.create(
                 model=model,
                 messages=msgs,
-                temperature=opts.temperature,
                 max_tokens=opts.max_tokens,
+                temperature=opts.temperature,
                 stream=True,
             )
             for chunk in stream:
@@ -389,16 +333,7 @@ class LLMClient:
         options: LLMOptions | None = None,
         history: list[LLMMessage] | None = None,
     ) -> LLMResponse:
-        """Soporte de ``tool_use`` (function calling) Anthropic.
-
-        ``tools`` sigue el schema oficial::
-
-            {"name": "search_smogon", "description": "...",
-             "input_schema": {"type": "object", "properties": {...}}}
-
-        Devuelve ``LLMResponse`` con ``tool_calls`` rellenado cuando el
-        modelo decide invocar herramientas.
-        """
+        """Soporte de function-calling en Groq."""
         opts = options or LLMOptions()
         model = self._model_for(role)
 
@@ -409,12 +344,8 @@ class LLMClient:
                 tool_calls=[],
             )
 
-        if role == LLMRole.LIGHT:
-            # Ollama de clasificación: degradamos a texto sin tool calls.
-            return self.complete(prompt, role=role, options=options, history=history)
-
         sdk = self._ensure_sdk()
-        self._groq_rate_limit()
+        self._rate_limit()
         msgs = self._build_history(prompt, history)
         if opts.system:
             msgs = [{"role": "system", "content": opts.system}, *msgs]
@@ -424,13 +355,12 @@ class LLMClient:
                 messages=msgs,
                 tools=self._to_openai_tools(tools),
                 tool_choice="auto",
-                temperature=opts.temperature,
                 max_tokens=opts.max_tokens,
+                temperature=opts.temperature,
             )
             msg = resp.choices[0].message
             tool_calls: list[dict[str, Any]] = []
             for tc in msg.tool_calls or []:
-                args = {}
                 raw = getattr(tc.function, "arguments", "{}") or "{}"
                 try:
                     args = json.loads(raw)
@@ -449,10 +379,22 @@ class LLMClient:
                 tool_calls=tool_calls,
             )
         except Exception as exc:
-            raise InfrastructureError(
-                "Groq tool calling fallo",
-                details={"model": model, "error": str(exc)},
-            ) from exc
+            # Algunos modelos de Groq pueden rechazar tool-calling.
+            # Degradamos a completion normal para evitar ruido en classify.
+            log.info(
+                "llm.tools_fallback_to_complete",
+                model=model,
+                error=str(exc),
+            )
+            base = self.complete(prompt, role=role, options=options, history=history)
+            return LLMResponse(
+                text=base.text,
+                model=base.model,
+                stop_reason=base.stop_reason,
+                input_tokens=base.input_tokens,
+                output_tokens=base.output_tokens,
+                tool_calls=[],
+            )
 
 
 # ---------------------------------------------------------------------------

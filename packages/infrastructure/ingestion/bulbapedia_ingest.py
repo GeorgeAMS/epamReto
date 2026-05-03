@@ -10,17 +10,10 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 from structlog import get_logger
 
+from infrastructure.embeddings import get_embedder
+from infrastructure.settings import get_settings
+
 logger = get_logger()
-
-
-def _embed_ollama(text: str, *, base_url: str = "http://localhost:11434") -> list[float]:
-    resp = httpx.post(
-        f"{base_url}/api/embeddings",
-        json={"model": "nomic-embed-text", "prompt": text},
-        timeout=60,
-    )
-    resp.raise_for_status()
-    return list(resp.json()["embedding"])
 
 
 def _pokemon_names(limit: int) -> list[str]:
@@ -30,16 +23,18 @@ def _pokemon_names(limit: int) -> list[str]:
 
 
 def run(limit: int) -> tuple[int, int]:
+    settings = get_settings()
     out_dir = Path("data/raw/bulbapedia")
     out_dir.mkdir(parents=True, exist_ok=True)
-    client = QdrantClient(url="http://localhost:6333")
+    client = QdrantClient(url=settings.qdrant_url)
+    embedder = get_embedder()
 
     names = _pokemon_names(max(limit * 3, 1200))
     collections = {c.name for c in client.get_collections().collections}
     if "pokedex_lore" not in collections:
         client.create_collection(
             collection_name="pokedex_lore",
-            vectors_config=VectorParams(size=768, distance=Distance.COSINE),
+            vectors_config=VectorParams(size=settings.embedding_dim, distance=Distance.COSINE),
         )
     base = "https://bulbapedia.bulbagarden.net/wiki/"
     ok = 0
@@ -55,7 +50,7 @@ def run(limit: int) -> tuple[int, int]:
             html = r.text
             (out_dir / f"{slug}.html").write_text(html, encoding="utf-8")
             text = html[:4000]
-            vec = _embed_ollama(text)
+            vec = embedder.embed(text)
             points.append(
                 PointStruct(
                     id=100000 + i,

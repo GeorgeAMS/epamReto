@@ -3,7 +3,7 @@
 Reglas:
 - Re-numera todas las ``Source`` globalmente como ``[1]``, ``[2]``, ... y le pide
   al LLM que cite cada hecho con esos números (la UI los renderiza como chips).
-- Usa Sonnet 4.6 (``LLMRole.BRAIN``) con ``options.system`` que reúne las
+- Usa el modelo ligero (``LLMRole.LIGHT``) con ``options.system`` que reúne las
   reglas de citación.
 - Expone dos modos:
     * ``run(agent_input, agent_outputs)``     → ``AgentResponse`` completa.
@@ -142,10 +142,10 @@ class Synthesizer(BaseAgent):
         try:
             response = self._llm.complete(
                 prompt,
-                role=LLMRole.BRAIN,
+                role=LLMRole.LIGHT,
                 options=LLMOptions(
-                    max_tokens=1200,
-                    temperature=0.3,
+                    max_tokens=420,
+                    temperature=0.2,
                     system=_SYSTEM_PROMPT,
                 ),
             )
@@ -202,10 +202,10 @@ class Synthesizer(BaseAgent):
         prompt, _ = _build_synthesis_prompt(agent_input.query, agent_outputs)
         yield from self._llm.stream(
             prompt,
-            role=LLMRole.BRAIN,
+            role=LLMRole.LIGHT,
             options=LLMOptions(
-                max_tokens=1200,
-                temperature=0.3,
+                max_tokens=420,
+                temperature=0.2,
                 system=_SYSTEM_PROMPT,
             ),
         )
@@ -337,8 +337,8 @@ class Synthesizer(BaseAgent):
             print("\n[TRACE] LLAMANDO A LLM...")
             response = self._llm.complete(
                 prompt,
-                role=LLMRole.BRAIN,
-                options=LLMOptions(max_tokens=200, temperature=0.5),
+                role=LLMRole.LIGHT,
+                options=LLMOptions(max_tokens=120, temperature=0.2),
             )
             response_text = getattr(response, "content", None) or getattr(response, "text", None) or str(response)
             print("[OK] LLM RESPONDIO:")

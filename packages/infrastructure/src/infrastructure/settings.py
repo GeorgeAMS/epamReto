@@ -26,11 +26,13 @@ class Settings(BaseSettings):
 
     # --- LLMs ---
     groq_api_key: str = Field(default="")
-    ollama_base_url: str = "http://localhost:11434"
     llm_brain_model: str = "llama-3.3-70b-versatile"
-    llm_light_model: str = "llama3.2:3b"
-    embedding_model: str = "nomic-embed-text"
-    embedding_dim: int = 768
+    llm_light_model: str = "llama-3.1-8b-instant"
+    gemini_api_key: str = Field(default="")
+    embedding_provider: str = "gemini"
+    ollama_base_url: str = "http://localhost:11434"
+    embedding_model: str = "text-embedding-004"
+    embedding_dim: int = 1536
 
     # --- Vector store ---
     qdrant_url: str = "http://localhost:6333"

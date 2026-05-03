@@ -19,7 +19,7 @@ cd apps/web && npm install   # frontend
 docker compose up -d
 
 # 3) Variables de entorno
-cp .env.example .env         # rellena ANTHROPIC_API_KEY, OPENAI_API_KEY
+cp .env.example .env         # rellena GROQ_API_KEY, GEMINI_API_KEY
 
 # 4) Dev loops
 uv run uvicorn api.main:app --reload --port 8000   # API → :8000
@@ -68,8 +68,8 @@ Detalle en [`ROADMAP.md`](./ROADMAP.md).
 |-----------------|------------|
 | Backend         | Python 3.11, FastAPI, Pydantic v2, structlog |
 | Agentes         | LangGraph 0.2 |
-| LLM principal   | Claude **Sonnet 4.6** (`claude-sonnet-4-6`) |
-| LLM ligero      | Claude **Haiku 4.5** (`claude-haiku-4-5-20251001`) |
+| LLM principal   | Groq **Llama 3.3 70B** (`llama-3.3-70b-versatile`) |
+| LLM ligero      | Groq **Llama 3.1 8B** (`llama-3.1-8b-instant`) |
 | Embeddings      | OpenAI `text-embedding-3-small` |
 | Vector DB       | Qdrant (Docker) |
 | Tabular         | DuckDB sobre CSVs Kaggle |
@@ -108,7 +108,7 @@ uv workspaces).
 
 ## Reglas duras del proyecto
 
-1. `domain/` no importa `requests`, `anthropic`, `fastapi`, ni nada de infra.
+1. `domain/` no importa `requests`, `groq`, `fastapi`, ni nada de infra.
 2. `calculator_agent` es función Python pura (jamás LLM).
 3. Cada agente devuelve `AgentResponse(content, sources, confidence, trace_id)`.
 4. Streaming **real** desde Anthropic API, nunca simulado.

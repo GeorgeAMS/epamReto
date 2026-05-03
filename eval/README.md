@@ -12,7 +12,7 @@ Suite de evaluación para Pokédex Arcana: dataset con contexto RAG, métricas R
 | `type` | Comportamiento |
 | --- | --- |
 | `damage_calculator` | Compara daño y rango con `DamageCalculator` + fixture (siempre offline). |
-| `orchestrator` | `Orchestrator.handle` con `CalculatorRequest` embebido; comprueba subcadenas en la respuesta final. **Si el LLM está en modo offline** (`ANTHROPIC_API_KEY` vacío), el sintetizador no mezcla la salida del calculator: esas filas **se omiten** con aviso. |
+| `orchestrator` | `Orchestrator.handle` con `CalculatorRequest` embebido; comprueba subcadenas en la respuesta final. **Si el LLM está en modo offline** (`GROQ_API_KEY` vacío), el sintetizador no mezcla la salida del calculator: esas filas **se omiten** con aviso. |
 
 ## Comandos
 
@@ -23,8 +23,8 @@ uv sync --extra dev --extra eval
 # Correctness (8 numéricos + hasta 5 E2E si hay API Anthropic)
 uv run python eval/run_correctness.py
 
-# Forzar fallo si quedan E2E sin ejecutar (requiere ANTHROPIC_API_KEY real)
-uv run python eval/run_correctness.py --require-anthropic
+# Forzar fallo si quedan E2E sin ejecutar (requiere GROQ_API_KEY real)
+uv run python eval/run_correctness.py --require-groq
 ```
 
 RAGAS (requiere **`OPENAI_API_KEY`** — LLM + embeddings por defecto):

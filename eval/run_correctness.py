@@ -2,7 +2,7 @@
 
 - ``damage_calculator``: compara con ``DamageCalculator`` (sin LLM).
 - ``orchestrator``: ``Orchestrator.handle`` + ``CalculatorRequest``. Requiere LLM
-  real (``ANTHROPIC_API_KEY``): en modo offline el sintetizador devuelve un stub
+  real (``GROQ_API_KEY``): en modo offline el sintetizador devuelve un stub
   y estas pruebas se omiten.
 
 Uso::
@@ -108,7 +108,7 @@ def main() -> None:
         default=Path(__file__).resolve().parent / "dataset.json",
     )
     parser.add_argument(
-        "--require-anthropic",
+        "--require-groq",
         action="store_true",
         help="Exit 1 if orchestrator checks were skipped (offline LLM).",
     )
@@ -143,7 +143,7 @@ def main() -> None:
         msg += f", {skipped_orch} orchestrator checks skipped (offline LLM)"
     msg += ")"
     print(msg)
-    if args.require_anthropic and skipped_orch:
+    if args.require_groq and skipped_orch:
         raise SystemExit(1)
 
 

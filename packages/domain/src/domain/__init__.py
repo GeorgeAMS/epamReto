@@ -5,7 +5,7 @@ Bounded contexts:
 - ``domain.team``           — team building y análisis de coberturas.
 - ``domain.conversation``   — memoria conversacional y resolución de contexto.
 
-Regla dura: este paquete no importa requests, anthropic, fastapi ni nada
+Regla dura: este paquete no importa requests, groq, fastapi ni nada
 de infraestructura. Es código puro auditable.
 """
 

@@ -4,7 +4,7 @@ Pipeline:
 1. Embebe la query con OpenAI (o fallback determinístico) → vector.
 2. Busca en la colección Qdrant ``pokedex_lore`` los top-k chunks.
 3. Construye un prompt con el contexto recuperado + cita por payload.
-4. Sonnet 4.6 sintetiza una respuesta y devuelve ``AgentResponse`` con
+4. Haiku sintetiza una respuesta y devuelve ``AgentResponse`` con
    ``sources`` apuntando a las URLs/títulos del payload.
 
 Cuando Qdrant no tiene la colección o está vacía (común en dev sin ingest),
@@ -111,8 +111,8 @@ class LoreAgent(BaseAgent):
         )
         response = self._llm.complete(
             prompt,
-            role=LLMRole.BRAIN,
-            options=LLMOptions(max_tokens=800, temperature=0.4, system=_LORE_SYSTEM),
+            role=LLMRole.LIGHT,
+            options=LLMOptions(max_tokens=320, temperature=0.2, system=_LORE_SYSTEM),
         )
 
         confidence = 0.85 if len(sources) >= 2 else 0.6

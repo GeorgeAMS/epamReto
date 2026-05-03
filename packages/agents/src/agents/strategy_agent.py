@@ -1,10 +1,10 @@
-"""Strategy agent — RAG Smogon + razonamiento competitivo Sonnet.
+"""Strategy agent — RAG Smogon + razonamiento competitivo ligero.
 
 Doble fuente:
 1. ``pokedex_strategy`` collection en Qdrant (chunks de análisis Smogon).
 2. ``CoverageAnalyzer`` del dominio cuando el contexto incluye un ``Team``.
 
-Sonnet sintetiza ambas vías en una respuesta táctica con citas.
+Haiku sintetiza ambas vías en una respuesta táctica con citas.
 """
 
 from __future__ import annotations
@@ -156,10 +156,10 @@ class StrategyAgent(BaseAgent):
 
         response = self._llm.complete(
             prompt,
-            role=LLMRole.BRAIN,
+            role=LLMRole.LIGHT,
             options=LLMOptions(
-                max_tokens=400,
-                temperature=0.3,
+                max_tokens=220,
+                temperature=0.2,
                 system=_STRATEGY_SYSTEM,
             ),
         )
