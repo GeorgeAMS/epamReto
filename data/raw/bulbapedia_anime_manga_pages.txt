@@ -1,0 +1,44 @@
+# Bulbapedia (EN): un slug por línea = segmento tras /wiki/ en la URL.
+# Líneas con # se ignoran. Si alguna página 404, quítala o corrige el slug.
+# Respeta robots.txt y no abuses del scraper (rate limit por defecto ~1 s).
+
+Pok%C3%A9mon_anime
+Animation_in_the_Pok%C3%A9mon_world
+History_of_the_Pok%C3%A9mon_anime
+Ash_Ketchum
+Ash%27s_Pikachu
+Misty_(anime)
+Brock_(anime)
+Tracey_Sketchit
+May_(anime)
+Dawn_(anime)
+Iris_(anime)
+Clemont_(anime)
+Serena_(anime)
+Goh
+Liko_(Horizons)
+Roy_(Horizons)
+Team_Rocket_trio
+Jessie
+James
+Meowth_(Team_Rocket)
+Officer_Jenny
+Nurse_Joy
+Pok%C3%A9mon_Adventures
+Red_(Adventures)
+Blue_(Adventures)
+Green_(Adventures)
+Yellow_(Adventures)
+Gold_(Adventures)
+Crystal_(Adventures)
+Ruby_(Adventures)
+Sapphire_(Adventures)
+Pok%C3%A9mon_manga
+Pocket_Monsters_(manga)
+Pok%C3%A9mon_Pocket_Monsters_(Kosaku_Anakubo)
+Pok%C3%A9mon_Zensho
+List_of_Pok%C3%A9mon_anime_episodes
+Pok%C3%A9mon_the_Series:_XYZ
+Pok%C3%A9mon_the_Series:_Sun_%26_Moon
+Pok%C3%A9mon_Journeys:_The_Series
+Pok%C3%A9mon_Horizons:_The_Series

@@ -23,6 +23,28 @@ _CANONICAL_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Texto plano para embeddings (wiki HTML es ruidoso).
+_EMBED_TEXT_MAX = 12000
+_PAYLOAD_TEXT_MAX = 3500
+
+
+def _extract_plain_text(html: str, max_chars: int = _EMBED_TEXT_MAX) -> str:
+    """Quita scripts/estilos y devuelve texto legible para RAG."""
+    try:
+        from bs4 import BeautifulSoup
+
+        soup = BeautifulSoup(html, "lxml")
+        for tag in soup(["script", "style", "noscript", "nav", "footer"]):
+            tag.decompose()
+        text = soup.get_text(separator="\n", strip=True)
+    except Exception:
+        text = re.sub(r"(?is)<script[^>]*>.*?</script>", " ", html)
+        text = re.sub(r"(?is)<style[^>]*>.*?</style>", " ", text)
+        text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"[ \t\r\f\v]+", " ", text)
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text[:max_chars].strip()
+
 
 def _pokemon_names(limit: int) -> list[str]:
     """Lista de nombres de especies desde PokéAPI.
@@ -76,8 +98,10 @@ def run_from_disk(
     out_dir: Path | None = None,
     recreate: bool = True,
     batch_size: int = 20,
+    lore_topic: str | None = None,
+    source_label: str = "bulbapedia",
 ) -> tuple[int, int]:
-    """Embebe todos los ``*.html`` de ``data/raw/bulbapedia`` y los sube a Qdrant."""
+    """Embebe todos los ``*.html`` bajo ``out_dir`` y los sube a Qdrant ``pokedex_lore``."""
     settings = get_settings()
     root = out_dir or Path("data/raw/bulbapedia")
     if not root.is_dir():
@@ -100,29 +124,33 @@ def run_from_disk(
         if not pending_texts:
             return
         vectors = embedder.embed_batch(pending_texts)
-        points = [
-            PointStruct(
-                id=_stable_point_id(url),
-                vector=vec,
-                payload={
-                    "title": title,
-                    "text": text[:2000],
-                    "url": url,
-                    "source": "bulbapedia",
-                    "pokemon": pokemon_guess,
-                    "file": path.name,
-                },
+        points: list[PointStruct] = []
+        for path, url, title, pokemon_guess, text, vec in zip(
+            pending_paths,
+            pending_urls,
+            pending_titles,
+            pending_pokemon,
+            pending_texts,
+            vectors,
+            strict=True,
+        ):
+            payload: dict[str, str | int | float | bool] = {
+                "title": title,
+                "text": text[:_PAYLOAD_TEXT_MAX],
+                "url": url,
+                "source": source_label,
+                "pokemon": pokemon_guess,
+                "file": path.name,
+            }
+            if lore_topic:
+                payload["lore_topic"] = lore_topic
+            points.append(
+                PointStruct(
+                    id=_stable_point_id(url),
+                    vector=vec,
+                    payload=payload,
+                )
             )
-            for path, url, title, pokemon_guess, text, vec in zip(
-                pending_paths,
-                pending_urls,
-                pending_titles,
-                pending_pokemon,
-                pending_texts,
-                vectors,
-                strict=True,
-            )
-        ]
         client.upsert(collection_name="pokedex_lore", points=points)
         pending_paths.clear()
         pending_urls.clear()
@@ -140,8 +168,14 @@ def run_from_disk(
             continue
         url = _canonical_url(html) or _wiki_url_from_filename(path.stem)
         stem_decoded = unquote(path.stem)
-        title = f"Bulbapedia {stem_decoded.replace('_', ' ')}"
-        text = html[:4000]
+        human = stem_decoded.replace("_", " ")
+        if lore_topic:
+            title = f"Bulbapedia ({lore_topic}) {human}"
+        else:
+            title = f"Bulbapedia {human}"
+        text = _extract_plain_text(html)
+        if not text:
+            text = html[:4000]
         pokemon_guess = stem_decoded.split("_(")[0].replace("_", " ").lower()
         pending_paths.append(path)
         pending_urls.append(url)
@@ -161,6 +195,8 @@ def run_from_disk(
         ok=ok,
         lore_count=count,
         recreate=recreate,
+        lore_topic=lore_topic or "",
+        source_label=source_label,
     )
     _write_report(
         {
@@ -169,6 +205,9 @@ def run_from_disk(
             "ok": ok,
             "lore_count": count,
             "recreate": recreate,
+            "lore_topic": lore_topic,
+            "source_label": source_label,
+            "html_dir": str(root),
         }
     )
     return ok, int(count)
@@ -197,7 +236,7 @@ def run(limit: int, *, recreate: bool = False) -> tuple[int, int]:
             r.raise_for_status()
             html = r.text
             (out_dir / f"{slug}.html").write_text(html, encoding="utf-8")
-            text = html[:4000]
+            text = _extract_plain_text(html) or html[:4000]
             vec = embedder.embed(text)
             points.append(
                 PointStruct(
@@ -205,7 +244,7 @@ def run(limit: int, *, recreate: bool = False) -> tuple[int, int]:
                     vector=vec,
                     payload={
                         "title": f"Bulbapedia {name}",
-                        "text": text[:2000],
+                        "text": text[:_PAYLOAD_TEXT_MAX],
                         "url": url,
                         "source": "bulbapedia",
                         "pokemon": name,
@@ -251,7 +290,25 @@ if __name__ == "__main__":
     parser.add_argument(
         "--from-disk",
         action="store_true",
-        help="Indexar todos los *.html en data/raw/bulbapedia (sin red salvo embeddings).",
+        help="Indexar *.html desde --html-dir (sin red salvo embeddings).",
+    )
+    parser.add_argument(
+        "--html-dir",
+        type=Path,
+        default=None,
+        help="Carpeta con HTML (default: data/raw/bulbapedia).",
+    )
+    parser.add_argument(
+        "--lore-topic",
+        type=str,
+        default=None,
+        help="Etiqueta en payload (ej. anime_manga). Títulos: Bulbapedia (topic) …",
+    )
+    parser.add_argument(
+        "--source-label",
+        type=str,
+        default=None,
+        help="Valor payload 'source' (default: bulbapedia o bulbapedia_anime si --lore-topic anime_manga).",
     )
     parser.add_argument(
         "--no-recreate",
@@ -266,6 +323,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.from_disk:
         recreate_default = not args.no_recreate
-        run_from_disk(recreate=recreate_default)
+        root = args.html_dir or Path("data/raw/bulbapedia")
+        topic = args.lore_topic
+        src = args.source_label
+        if src is None:
+            src = "bulbapedia_anime" if topic == "anime_manga" else "bulbapedia"
+        run_from_disk(
+            out_dir=root,
+            recreate=recreate_default,
+            lore_topic=topic,
+            source_label=src,
+        )
     else:
         run(args.limit, recreate=args.recreate)

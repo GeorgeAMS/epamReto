@@ -94,13 +94,20 @@ class LoreAgent(BaseAgent):
             url = payload.get("url")
             snippet = str(payload.get("text", payload.get("snippet", "")))[:600]
             context_blocks.append(f"[{i}] {title}\n{snippet}")
+            topic = str(payload.get("lore_topic", "") or "")
+            if url and "bulbapedia" in url and topic == "anime_manga":
+                kind = "bulbapedia_anime"
+            elif url and "bulbapedia" in url:
+                kind = "bulbapedia"
+            else:
+                kind = "lore"
             sources.append(
                 Source(
                     id=f"lore:{hit.id}",
                     title=title,
                     url=url,
                     snippet=snippet[:300],
-                    kind="bulbapedia" if url and "bulbapedia" in url else "lore",
+                    kind=kind,
                 )
             )
 
@@ -162,8 +169,8 @@ class LoreAgent(BaseAgent):
             agent=self.name,
             content=(
                 "No encontré información de lore relevante en la base de "
-                f"conocimiento ({reason}). Cuando ingestemos Bulbapedia "
-                "(FASE 2 — `bulbapedia_scraper`) este agente devolverá citas reales."
+                f"conocimiento ({reason}). Ejecuta ingesta Bulbapedia (especies y/o "
+                "`anime-manga` + `bulbapedia_ingest --from-disk`) para citas reales."
             ),
             confidence=0.0,
             trace_id=agent_input.trace_id,
