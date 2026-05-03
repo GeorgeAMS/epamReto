@@ -36,6 +36,9 @@ from shared.types import Source, confidence_to_level
 
 log = get_logger(__name__)
 
+# Groq/LIGHT: respuestas largas (lore, varios agentes) superaban 420 tokens y quedaban a medias.
+_SYNTH_MAX_TOKENS = 2048
+
 
 _SYSTEM_PROMPT = """Eres POKÉDEX ARCANA, un asistente experto en Pokémon competitivo.
 
@@ -53,6 +56,7 @@ REGLAS DURAS:
    (rango, %HP) — vienen del calculator_agent y son verificados.
 6. No menciones "los sub-agentes" en la respuesta — el usuario no los conoce.
 7. Responde en el mismo idioma que el usuario (español por defecto).
+8. En español (y en general), escribe siempre un espacio entre palabras y tras signos de puntuación; no pegues palabras.
 """
 
 
@@ -144,7 +148,7 @@ class Synthesizer(BaseAgent):
                 prompt,
                 role=LLMRole.LIGHT,
                 options=LLMOptions(
-                    max_tokens=420,
+                    max_tokens=_SYNTH_MAX_TOKENS,
                     temperature=0.2,
                     system=_SYSTEM_PROMPT,
                 ),
@@ -204,7 +208,7 @@ class Synthesizer(BaseAgent):
             prompt,
             role=LLMRole.LIGHT,
             options=LLMOptions(
-                max_tokens=420,
+                max_tokens=_SYNTH_MAX_TOKENS,
                 temperature=0.2,
                 system=_SYSTEM_PROMPT,
             ),
