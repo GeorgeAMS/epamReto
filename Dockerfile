@@ -25,6 +25,7 @@ ENV UV_COMPILE_BYTECODE=1 \
 COPY pyproject.toml uv.lock README.md ./
 COPY packages ./packages
 COPY apps/api ./apps/api
+COPY data/processed/pokemon.duckdb ./data/processed/pokemon.duckdb
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev

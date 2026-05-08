@@ -22,3 +22,4 @@ terminals
 **/.wrangler
 **/*.duckdb
 **/*.sqlite
+!data/processed/pokemon.duckdb
