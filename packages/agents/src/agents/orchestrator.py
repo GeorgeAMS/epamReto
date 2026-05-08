@@ -141,6 +141,7 @@ class GraphState(TypedDict, total=False):
     stats_response: str
     lore_response: str
     strategy_response: str
+    lore_agent_dump: dict[str, Any]
     strategy_agent_dump: dict[str, Any]
     calculator_agent_dump: dict[str, Any]
     calculator_parse: dict[str, Any]
