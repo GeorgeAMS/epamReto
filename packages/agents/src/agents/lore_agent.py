@@ -146,8 +146,20 @@ class LoreAgent(BaseAgent):
 
     @traced("lore_agent")
     def run(self, agent_input: AgentInput) -> AgentResponse:
+        pokemon_hint = str(agent_input.context.get("pokemon_hint", "")).strip().lower()
         try:
-            hits = self._merge_hits(agent_input.query)
+            if pokemon_hint:
+                # Preferir chunks de la especie consultada mejora relevancia del RAG.
+                hits = self.store.search_text(
+                    collection=self._collection,
+                    query=agent_input.query,
+                    top_k=self._top_k,
+                    filters={"pokemon": pokemon_hint},
+                )
+                if not hits:
+                    hits = self._merge_hits(agent_input.query)
+            else:
+                hits = self._merge_hits(agent_input.query)
         except Exception as exc:
             # Qdrant offline / colección no creada / red caída → degradamos
             # con honestidad en vez de tirar la query completa.
