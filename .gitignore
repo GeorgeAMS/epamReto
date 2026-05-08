@@ -105,3 +105,7 @@ reports/
 
 # --- Langfuse local --------------------------------------------------------
 langfuse-data/
+
+# Keep the production Pokédex DB snapshot versioned for cloud deploys.
+!data/processed/
+!data/processed/pokemon.duckdb
