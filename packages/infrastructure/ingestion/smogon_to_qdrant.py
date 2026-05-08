@@ -40,7 +40,7 @@ OU_TOP_100 = [
 def load_smogon_to_qdrant() -> int:
     """Carga análisis Smogon a `pokedex_strategy` con embedder configurado."""
     settings = get_settings()
-    client = QdrantClient(url=settings.qdrant_url)
+    client = QdrantClient(url=settings.qdrant_url, api_key=(settings.qdrant_api_key or None))
     embedder = get_embedder()
 
     smogon_file = Path("data/raw/smogon/smogon_ou_full.json")

@@ -107,7 +107,7 @@ def run_from_disk(
     if not root.is_dir():
         raise FileNotFoundError(f"No existe el directorio de HTML: {root}")
 
-    client = QdrantClient(url=settings.qdrant_url)
+    client = QdrantClient(url=settings.qdrant_url, api_key=(settings.qdrant_api_key or None))
     embedder = get_embedder()
     _ensure_lore_collection(client, settings.embedding_dim, recreate=recreate)
 
@@ -218,7 +218,7 @@ def run(limit: int, *, recreate: bool = False) -> tuple[int, int]:
     settings = get_settings()
     out_dir = Path("data/raw/bulbapedia")
     out_dir.mkdir(parents=True, exist_ok=True)
-    client = QdrantClient(url=settings.qdrant_url)
+    client = QdrantClient(url=settings.qdrant_url, api_key=(settings.qdrant_api_key or None))
     embedder = get_embedder()
 
     names = _pokemon_names(limit)

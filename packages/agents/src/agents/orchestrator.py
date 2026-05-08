@@ -444,6 +444,19 @@ class Orchestrator:
             print("<<< NODE: dispatch | Agent outputs: strategy_agent_dump=1")
             return state
 
+        if intent == "lore":
+            poke = entities.get("pokemon")
+            ctx: dict[str, Any] = {}
+            if poke:
+                ctx["pokemon_hint"] = str(poke)
+            agent_input = AgentInput(query=state["query"], trace_id=tid, context=ctx)
+            lore_resp = self.lore_agent.run(agent_input)
+            state = dict(state)
+            state["lore_agent_dump"] = lore_resp.model_dump(mode="json")
+            state["stats_response"] = json.dumps({"skipped": True, "reason": "lore"})
+            print("<<< NODE: dispatch | Agent outputs: lore_agent_dump=1")
+            return state
+
         if intent == "calculation":
             out = dict(state)
             req_obj = entities.get("calculator_request") or state.get("calculator_request")
@@ -530,6 +543,20 @@ class Orchestrator:
                 data={**strat.data, "intent": "strategy", "fast_path": False},
             )
             print(f"<<< NODE: synthesize | Response length: {len(text)}")
+            return {"final_response": final}
+
+        if "lore_agent_dump" in sd and sd["lore_agent_dump"]:
+            print("DEBUG: _node_synthesize path LORE")
+            lore = AgentResponse.model_validate(sd["lore_agent_dump"])
+            final = AgentResponse(
+                agent="synthesizer",
+                content=lore.content,
+                confidence=float(lore.confidence),
+                trace_id=TraceId(sd["trace_id"]),
+                sources=lore.sources,
+                data={**lore.data, "intent": "lore", "fast_path": False},
+            )
+            print(f"<<< NODE: synthesize | Response length: {len(lore.content)}")
             return {"final_response": final}
 
         if "calculator_agent_dump" in sd and sd["calculator_agent_dump"]:
