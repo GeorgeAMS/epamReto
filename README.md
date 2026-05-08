@@ -106,7 +106,7 @@ Abre la URL de Vite y prueba algo épico, por ejemplo:
 
 > *If a Bold Abomasnow uses Blizzard against a Jigglypuff with 0 SpD EVs, how much damage does it do?*
 
-Más detalle operativo: [`DEPLOYMENT.md`](./DEPLOYMENT.md) · Hoja de ruta: [`ROADMAP.md`](./ROADMAP.md).
+Más detalle operativo: [`DEPLOYMENT.md`](./DEPLOYMENT.md) · incluye ruta gratis recomendada (**Render + Vercel**) · Hoja de ruta: [`ROADMAP.md`](./ROADMAP.md).
 
 ---
 

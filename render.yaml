@@ -1,0 +1,38 @@
+services:
+  - type: web
+    name: pokedex-arcana-api
+    runtime: docker
+    repo: https://github.com/your-user/your-repo
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeploy: true
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: ENV
+        value: prod
+      - key: API_CORS_ORIGINS
+        sync: false
+      - key: AUTH_USER
+        sync: false
+      - key: AUTH_PASSWORD
+        sync: false
+      - key: AUTH_TOKEN_SECRET
+        sync: false
+      - key: AUTH_TOKEN_EXP_MINUTES
+        value: "480"
+      - key: CHAT_RATE_LIMIT_PER_MINUTE
+        value: "60"
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: EMBEDDING_PROVIDER
+        value: gemini
+      - key: EMBEDDING_MODEL
+        value: text-embedding-004
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false

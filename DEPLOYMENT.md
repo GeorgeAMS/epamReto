@@ -79,7 +79,26 @@ docker run --rm -p 18001:8000 --env-file .env pokedex-api
 
 (Ajusta `QDRANT_URL` si Qdrant no está en la misma red Docker.)
 
-## API en la nube (Fly.io)
+## API en la nube gratis (Render recomendado)
+
+Hay un `render.yaml` en la raiz para dejar el backend listo.
+
+1. Sube este repo a GitHub.
+2. En Render: **New +** -> **Blueprint** -> selecciona tu repo.
+3. Render detecta `render.yaml` y crea `pokedex-arcana-api` en plan free.
+4. En variables (o en el propio Blueprint), define:
+   - `GROQ_API_KEY`
+   - `GEMINI_API_KEY` (si `EMBEDDING_PROVIDER=gemini`)
+   - `QDRANT_URL` y `QDRANT_API_KEY` (Qdrant Cloud)
+   - `AUTH_USER`, `AUTH_PASSWORD`, `AUTH_TOKEN_SECRET`
+   - `API_CORS_ORIGINS=https://<tu-front>.vercel.app`
+5. Espera deploy y valida `https://<tu-api>.onrender.com/health`.
+
+Notas:
+- Free tier puede "dormir" la API sin trafico (cold start).
+- No uses `localhost` para Qdrant en nube; usa endpoint publico.
+
+## API en la nube (Fly.io alternativa)
 
 Hay un `fly.toml` en la raíz. Qdrant y Ollama **no** pueden ser `localhost` dentro del contenedor: usa [Qdrant Cloud](https://cloud.qdrant.io/) (u otro) y embeddings con `EMBEDDING_PROVIDER=gemini` o URL pública de Ollama.
 
@@ -98,6 +117,23 @@ URL pública tipo `https://pokedex-arcana-api.fly.dev` → pégala en Vercel com
 
 ## Front (Vercel) + API
 
-1. Despliega la API (Fly, Railway, Render, etc.) y copia su URL HTTPS.
-2. En Vercel (proyecto del front): `VITE_API_URL=<esa URL>`.
-3. En el host de la API: `API_CORS_ORIGINS` debe incluir `https://tu-proyecto.vercel.app` (y previews si las usas).
+Hay un `apps/pokedex-arcana-frontend/vercel.json` listo para SPA routing.
+
+1. En Vercel: **Add New Project** y selecciona este repo.
+2. Define:
+   - **Root Directory**: `apps/pokedex-arcana-frontend`
+   - **Build Command**: `npm install && npm run build`
+   - **Output Directory**: `dist`
+3. Agrega variable de entorno:
+   - `VITE_API_URL=https://<tu-api>.onrender.com`
+4. Deploy.
+5. En el backend, confirma:
+   - `API_CORS_ORIGINS=https://<tu-proyecto>.vercel.app`
+
+## Checklist de salida (internet, gratis y funcional)
+
+- [ ] `GET /health` responde `status=ok` en URL publica.
+- [ ] Login funciona en front contra backend publico.
+- [ ] Chat (`/chat` y `/chat/stream`) responde sin CORS errors.
+- [ ] `VITE_API_URL` en Vercel apunta al backend publico.
+- [ ] No hay secretos en git (solo en variables de entorno).
