@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "@/lib/route-guards";
 import { useState } from "react";
 import { api, ApiError } from "@/lib/api/client";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { TypeChip } from "@/components/pokemon/TypeChip";
 
 export const Route = createFileRoute("/team")({
+  beforeLoad: requireAuth,
   head: () => ({ meta: [{ title: "Equipo — Pokédex Arcana" }, { name: "description", content: "Constructor de equipos competitivos." }] }),
   component: TeamPage,
 });
@@ -150,3 +152,5 @@ function TeamPage() {
     </div>
   );
 }
+
+

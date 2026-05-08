@@ -110,6 +110,29 @@ Más detalle operativo: [`DEPLOYMENT.md`](./DEPLOYMENT.md) · Hoja de ruta: [`RO
 
 ---
 
+## 🔐 Seguridad del chat (antes → después)
+
+Metodología tipo **Cursor × Nexo** (rules + endurecer API + Semgrep MCP). Cambios aplicados en este repo:
+
+| Área | Antes | Después |
+|:---|:---|:---|
+| **Validación de `context`** | Cualquier JSON (`dict` abierto) llegaba al orquestador | Esquema **strict** (`extra=forbid`): solo `calculator_request`, tamaño acotado |
+| **Logs de peticiones** | Se logueaba el texto completo de `query` | Hash corto + longitud; en `ENV=dev` un **preview** truncado (sin volcar prompts enteros) |
+| **Rate limiting** | Sin límite por IP en `/chat` | **slowapi**: límite configurable (`CHAT_RATE_LIMIT_PER_MINUTE`, por defecto 60/min e IP) |
+| **Semgrep: SQLi en Pokédex** | Query SQL construida dinámicamente con concatenación | Consulta estática (`SELECT ... ORDER BY id`) + filtros en memoria (sin SQL dinámico con input) |
+| **Cursor Rules** | — | `.cursor/rules/security.mdc` (`alwaysApply`) |
+| **Semgrep MCP** | — | Plantilla `.cursor/mcp.json.example` → copiar a `.cursor/mcp.json` (token en semgrep.dev; ver archivo) |
+
+**Referencia de código:** `apps/api/src/api/routers/chat.py` (`ChatContextPayload`, `_log_query_fields`, `@limiter.limit`).
+
+**Antes (Semgrep marcaba riesgo SQLi):**
+- `apps/api/src/api/routers/pokedex.py`: query armada por concatenación para filtros y paginación.
+
+**Después (mitigado):**
+- `apps/api/src/api/routers/pokedex.py`: query base estática y filtros aplicados en Python, evitando SQL dinámico con input.
+
+---
+
 ## 🧱 Stack (sin marear)
 
 | Capa | Tecnología |

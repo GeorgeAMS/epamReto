@@ -120,31 +120,36 @@ def _list_pokemon_from_duckdb(
 ) -> list[PokemonListItem]:
     with duckdb.connect(str(db_path)) as conn:
         columns = {r[0] for r in conn.execute("DESCRIBE pokemon").fetchall()}
-        type1_col = "type1" if "type1" in columns else "primary_type"
-        type2_col = "type2" if "type2" in columns else "secondary_type"
+        # Consulta estática + filtrado en memoria: evita SQL dinámico y elimina
+        # superficie de inyección por concatenación de strings.
+        if "type1" in columns and "type2" in columns:
+            rows = conn.execute(
+                "SELECT id, name, type1, type2 FROM pokemon ORDER BY id"
+            ).fetchall()
+        else:
+            rows = conn.execute(
+                "SELECT id, name, primary_type, secondary_type FROM pokemon ORDER BY id"
+            ).fetchall()
 
-        query = f"SELECT id, name, {type1_col}, {type2_col} FROM pokemon WHERE 1=1"
-        params: list[Any] = []
+    filtered: list[Any] = rows
 
-        if type_filter:
-            type_lower = type_filter.strip().lower()
-            query += (
-                f" AND (LOWER(COALESCE({type1_col}, '')) = ? "
-                f"OR LOWER(COALESCE({type2_col}, '')) = ?)"
-            )
-            params.extend([type_lower, type_lower])
+    if generation and generation in _GEN_ID_RANGE:
+        start, end = _GEN_ID_RANGE[generation]
+        filtered = [r for r in filtered if start <= int(r[0]) <= end]
 
-        if generation:
-            if generation in _GEN_ID_RANGE:
-                start, end = _GEN_ID_RANGE[generation]
-                query += f" AND id BETWEEN {start} AND {end}"
+    if type_filter:
+        type_lower = type_filter.strip().lower()
+        filtered = [
+            r
+            for r in filtered
+            if type_lower in {str(r[2] or "").lower(), str(r[3] or "").lower()}
+        ]
 
-        if search:
-            query += " AND LOWER(name) LIKE ?"
-            params.append(f"%{search.lower()}%")
+    if search:
+        needle = search.strip().lower()
+        filtered = [r for r in filtered if needle in str(r[1]).lower()]
 
-        query += f" ORDER BY id LIMIT {limit} OFFSET {offset}"
-        rows = conn.execute(query, params).fetchall()
+    rows = filtered[offset : offset + limit]
 
     pokemon_list: list[PokemonListItem] = []
     for row in rows:

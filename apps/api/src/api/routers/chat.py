@@ -10,15 +10,14 @@ se reutiliza; si no, se crea uno nuevo. Cada request añade un ``Turn`` user y
 otro assistant a la conversación correspondiente.
 """
 
-from __future__ import annotations
-
 import asyncio
+import hashlib
 import json
 from collections.abc import AsyncIterator
 from typing import Any
 
 from fastapi import APIRouter, Depends, Request
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sse_starlette.sse import EventSourceResponse
 
 from agents.base import AgentResponse
@@ -31,6 +30,8 @@ from api.dependencies import (
     get_orchestrator,
     get_trace_id,
 )
+from api.rate_limit import limiter
+from infrastructure.settings import get_settings
 from shared.logging import get_logger
 from shared.types import TraceId
 
@@ -38,12 +39,51 @@ log = get_logger(__name__)
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
+_CHAT_RATE = f"{get_settings().chat_rate_limit_per_minute}/minute"
+
+
+class ChatContextPayload(BaseModel):
+    """Solo claves que el orquestador entiende; bloquea mapas JSON arbitrarios."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    calculator_request: dict[str, Any] | None = None
+
+    @field_validator("calculator_request")
+    @classmethod
+    def _cap_calculator_payload(cls, v: dict[str, Any] | None) -> dict[str, Any] | None:
+        if v is None:
+            return None
+        raw = json.dumps(v, ensure_ascii=False)
+        if len(raw) > 48_000:
+            raise ValueError("calculator_request excede tamaño máximo permitido")
+        return v
+
 
 class ChatRequest(BaseModel):
     query: str = Field(min_length=1, max_length=2000)
-    conversation_id: str | None = None
-    # Payload estructurado para el orchestrator (p. ej. calculator_request, team).
-    context: dict[str, Any] | None = None
+    conversation_id: str | None = Field(default=None, max_length=128)
+    context: ChatContextPayload | None = None
+
+
+def _context_for_orchestrator(ctx: ChatContextPayload | None) -> dict[str, Any] | None:
+    if ctx is None:
+        return None
+    dumped = ctx.model_dump(exclude_none=True)
+    return dumped if dumped else None
+
+
+def _log_query_fields(query: str) -> dict[str, Any]:
+    """No registrar el texto completo del usuario (prompt injection / contenido sensible)."""
+    digest = hashlib.sha256(query.encode("utf-8")).hexdigest()[:16]
+    out: dict[str, Any] = {
+        "query_len": len(query),
+        "query_sha256_16": digest,
+    }
+    if get_settings().env == "dev":
+        n = 160
+        out["query_preview"] = query[:n] + ("…" if len(query) > n else "")
+    return out
 
 
 class ChatResponse(BaseModel):
@@ -71,29 +111,31 @@ def _serialize(response: AgentResponse, *, conversation_id: str) -> ChatResponse
 
 
 @router.post("", response_model=ChatResponse)
+@limiter.limit(_CHAT_RATE)
 async def chat(
-    req: ChatRequest,
+    payload: ChatRequest,
+    request: Request,
     orchestrator: Orchestrator = Depends(get_orchestrator),
     conversations: ConversationStore = Depends(get_conversations),
     agent_trace: AgentTraceStore = Depends(get_agent_trace),
     trace_id: str = Depends(get_trace_id),
 ) -> ChatResponse:
     """Ejecuta el grafo de agentes de forma bloqueante y devuelve la respuesta."""
-    conv = conversations.get_or_create(req.conversation_id)
-    conversations.append_user_turn(conv.id, req.query)
+    conv = conversations.get_or_create(payload.conversation_id)
+    conversations.append_user_turn(conv.id, payload.query)
 
     log.info(
         "chat.invoke",
-        query=req.query,
+        **_log_query_fields(payload.query),
         conversation_id=conv.id,
         trace_id=trace_id,
     )
     # El orchestrator es sync (LangGraph compilado sync). Lo despachamos a un
     # thread para no bloquear el event loop de FastAPI.
-    ctx = req.context if req.context else None
+    ctx = _context_for_orchestrator(payload.context)
     response = await asyncio.to_thread(
         orchestrator.handle,
-        req.query,
+        payload.query,
         trace_id=TraceId(trace_id) if trace_id else None,
         context=ctx,
     )
@@ -112,8 +154,9 @@ async def chat(
 
 
 @router.post("/stream")
+@limiter.limit(_CHAT_RATE)
 async def chat_stream(
-    req: ChatRequest,
+    payload: ChatRequest,
     request: Request,
     orchestrator: Orchestrator = Depends(get_orchestrator),
     conversations: ConversationStore = Depends(get_conversations),
@@ -128,11 +171,11 @@ async def chat_stream(
     - ``token``   → cada delta de texto del Synthesizer (Sonnet streaming).
     - ``done``    → ``{trace_id, confidence, confidence_level, sources, data}``.
     """
-    conv = conversations.get_or_create(req.conversation_id)
-    user_turn = conversations.append_user_turn(conv.id, req.query)
+    conv = conversations.get_or_create(payload.conversation_id)
+    user_turn = conversations.append_user_turn(conv.id, payload.query)
     log.info(
         "chat.stream.invoke",
-        query=req.query,
+        **_log_query_fields(payload.query),
         conversation_id=conv.id,
         trace_id=trace_id,
         user_turn=user_turn.id,
@@ -140,12 +183,12 @@ async def chat_stream(
 
     final_holder: dict[str, AgentResponse] = {}
     accumulated_tokens: list[str] = []
-    ctx = req.context if req.context else None
+    ctx = _context_for_orchestrator(payload.context)
 
     async def event_gen() -> AsyncIterator[dict[str, Any]]:
         loop = asyncio.get_running_loop()
         sync_iter = orchestrator.handle_stream(
-            req.query,
+            payload.query,
             trace_id=TraceId(trace_id) if trace_id else None,
             context=ctx,
         )
@@ -221,9 +264,9 @@ async def chat_stream(
             confidence = 0.0
             if isinstance(data, str):
                 try:
-                    payload = json.loads(data)
-                    sources_json = payload.get("sources", [])
-                    confidence = float(payload.get("confidence", 0.0))
+                    parsed_done = json.loads(data)
+                    sources_json = parsed_done.get("sources", [])
+                    confidence = float(parsed_done.get("confidence", 0.0))
                 except (ValueError, TypeError):
                     pass
             # Guardamos un turn assistant ligero (sin re-llamar al graph).

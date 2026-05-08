@@ -1,5 +1,6 @@
-import { Link } from "@tanstack/react-router";
-import { MessageSquare, Search, Swords, Columns2 } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { MessageSquare, Search, Swords, Columns2, LogOut } from "lucide-react";
+import { clearAuthToken, getAuthToken } from "@/lib/auth";
 
 const items = [
   { to: "/", label: "Chat", icon: MessageSquare, exact: true },
@@ -21,6 +22,9 @@ function PokeballIcon({ className = "" }: { className?: string }) {
 }
 
 export function TopNav() {
+  const navigate = useNavigate();
+  const isAuthed = Boolean(getAuthToken());
+
   return (
     <header className="sticky top-0 z-40">
       {/* Banda roja superior estilo Pokédex */}
@@ -51,9 +55,23 @@ export function TopNav() {
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center gap-2 rounded-full bg-poke-white border-2 border-poke-black px-3 py-1 shadow-[0_2px_0_0_var(--poke-black)]">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-200 animate-pulse" />
-            <span className="font-pixel text-[9px] text-poke-black">ONLINE</span>
+          <div className="hidden md:flex items-center gap-2">
+            <div className="flex items-center gap-2 rounded-full bg-poke-white border-2 border-poke-black px-3 py-1 shadow-[0_2px_0_0_var(--poke-black)]">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-200 animate-pulse" />
+              <span className="font-pixel text-[9px] text-poke-black">ONLINE</span>
+            </div>
+            {isAuthed ? (
+              <button
+                onClick={() => {
+                  clearAuthToken();
+                  navigate({ to: "/login" });
+                }}
+                className="inline-flex items-center gap-1 rounded-full border-[3px] border-poke-black bg-poke-white px-3 py-1 text-xs font-bold text-poke-black shadow-[0_2px_0_0_var(--poke-black)] hover:bg-poke-yellow"
+              >
+                <LogOut className="h-3.5 w-3.5" strokeWidth={2.5} />
+                Salir
+              </button>
+            ) : null}
           </div>
         </div>
       </div>

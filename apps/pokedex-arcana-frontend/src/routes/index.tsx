@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "@/lib/route-guards";
 import { useEffect, useRef } from "react";
 import { useChat } from "@/features/chat/useChat";
 import { MessageBubble } from "@/features/chat/MessageBubble";
@@ -7,6 +8,7 @@ import { PipelineIndicator } from "@/features/chat/PipelineIndicator";
 import { Trash2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
+  beforeLoad: requireAuth,
   head: () => ({
     meta: [
       { title: "Chat — Pokédex Arcana" },
@@ -118,3 +120,5 @@ function EmptyState({ onPick }: { onPick: (t: string) => void }) {
     </div>
   );
 }
+
+

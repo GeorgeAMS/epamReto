@@ -1,0 +1,16 @@
+---
+description: Nexo security workflow for sensitive features
+alwaysApply: true
+---
+
+# Workflow obligatorio (Cursor × Nexo)
+- Si la tarea toca login, pagos, uploads, auth, chat público o endpoints nuevos:
+  1) lista 5 riesgos de seguridad,
+  2) explica mitigaciones concretas (validación, librería, config),
+  3) recién después propone o escribe código.
+
+# Criterio de salida
+- No considerar "terminado" sin:
+  - validación estricta de entrada,
+  - controles de abuso (rate limiting / tamaño de payload),
+  - revisión de logs para no exponer secretos o PII.

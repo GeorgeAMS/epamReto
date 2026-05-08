@@ -94,8 +94,27 @@ def client(tmp_path: Path) -> Iterator[TestClient]:
         yield test_client
 
 
+def _auth_headers(client: TestClient) -> dict[str, str]:
+    login = client.post(
+        "/auth/login",
+        json={"username": "admin", "password": "admin12345"},
+    )
+    assert login.status_code == 200
+    token = login.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+
+def test_login_rejects_invalid_credentials(client: TestClient) -> None:
+    r = client.post("/auth/login", json={"username": "admin", "password": "bad-password"})
+    assert r.status_code == 401
+
+
 def test_post_chat_returns_chat_response(client: TestClient) -> None:
-    r = client.post("/chat", json={"query": "What types does Pikachu have?"})
+    r = client.post(
+        "/chat",
+        json={"query": "What types does Pikachu have?"},
+        headers=_auth_headers(client),
+    )
     assert r.status_code == 200
     body = r.json()
     assert body["agent"] == "synthesizer"
@@ -108,28 +127,39 @@ def test_post_chat_passes_context(client: TestClient) -> None:
     r = client.post(
         "/chat",
         json={"query": "damage calc", "context": {"calculator_request": {"mock": 1}}},
+        headers=_auth_headers(client),
     )
     assert r.status_code == 200
     assert r.json()["data"]["context_keys"] == ["calculator_request"]
 
 
+def test_post_chat_rejects_unknown_context_keys(client: TestClient) -> None:
+    r = client.post(
+        "/chat",
+        json={"query": "hi", "context": {"evil_key": True}},
+        headers=_auth_headers(client),
+    )
+    assert r.status_code == 422
+
 def test_conversations_turns_and_trace(client: TestClient) -> None:
-    r0 = client.post("/chat", json={"query": "hi"})
+    headers = _auth_headers(client)
+    r0 = client.post("/chat", json={"query": "hi"}, headers=headers)
     cid = r0.json()["conversation_id"]
 
-    tr = client.get(f"/traces/{cid}")
+    tr = client.get(f"/traces/{cid}", headers=headers)
     assert tr.status_code == 200
     body = tr.json()
     assert "timeline" in body
     assert any(e["kind"] == "chat_sync" for e in body["timeline"])
 
-    turns = client.get(f"/conversations/{cid}/turns")
+    turns = client.get(f"/conversations/{cid}/turns", headers=headers)
     assert turns.status_code == 200
     assert len(turns.json()) == 2
 
 
 def test_chat_stream_contains_events(client: TestClient) -> None:
-    conv = client.post("/conversations")
+    headers = _auth_headers(client)
+    conv = client.post("/conversations", headers=headers)
     assert conv.status_code == 201
     cid = conv.json()["id"]
 
@@ -137,6 +167,7 @@ def test_chat_stream_contains_events(client: TestClient) -> None:
         "POST",
         "/chat/stream",
         json={"query": "hello stream", "conversation_id": cid},
+        headers=headers,
     ) as resp:
         assert resp.status_code == 200
         payload = b"".join(resp.iter_bytes())
@@ -149,9 +180,11 @@ def test_chat_stream_contains_events(client: TestClient) -> None:
 
 
 def test_report_generate_writes_markdown(client: TestClient) -> None:
+    headers = _auth_headers(client)
     r = client.post(
         "/reports/generate",
         json={"query": "Report me Garchomp"},
+        headers=headers,
     )
     assert r.status_code == 200
     body = r.json()

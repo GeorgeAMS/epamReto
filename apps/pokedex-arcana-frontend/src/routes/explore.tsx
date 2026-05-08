@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "@/lib/route-guards";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { api, normalizeGenerationList, normalizePokemonList, normalizeStringList } from "@/lib/api/client";
@@ -9,6 +10,7 @@ import { TypeChip } from "@/components/pokemon/TypeChip";
 import { Search, X } from "lucide-react";
 
 export const Route = createFileRoute("/explore")({
+  beforeLoad: requireAuth,
   head: () => ({
     meta: [
       { title: "Pokédex — Pokédex Arcana" },
@@ -122,3 +124,5 @@ function ErrorState({ message, onRetry }: { message?: string; onRetry: () => voi
     </div>
   );
 }
+
+

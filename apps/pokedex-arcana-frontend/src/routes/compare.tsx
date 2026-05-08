@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "@/lib/route-guards";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "@/lib/api/client";
 import type { Pokemon } from "@/lib/api/types";
@@ -9,6 +10,7 @@ import { Plus, X } from "lucide-react";
 import { Legend, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ResponsiveContainer, Tooltip } from "recharts";
 
 export const Route = createFileRoute("/compare")({
+  beforeLoad: requireAuth,
   head: () => ({
     meta: [
       { title: "Comparar — Pokédex Arcana" },
@@ -363,3 +365,5 @@ function ComparePage() {
     </div>
   );
 }
+
+

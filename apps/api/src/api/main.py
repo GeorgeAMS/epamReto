@@ -23,13 +23,28 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
 from agents.orchestrator import Orchestrator
 from agents.reporter_agent import ReporterAgent
 from api.agent_trace_store import AgentTraceStore
+from api.auth import verify_access_token
 from api.conversations_store import ConversationStore
 from api.middleware import TraceIdMiddleware
-from api.routers import chat, compare, conversations, observability, pokedex, reports, saved_teams, teams
+from api.rate_limit import limiter
+from api.routers import (
+    auth,
+    chat,
+    compare,
+    conversations,
+    observability,
+    pokedex,
+    reports,
+    saved_teams,
+    teams,
+)
 from infrastructure.settings import get_settings
 from shared.logging import configure_logging, get_logger
 
@@ -70,6 +85,8 @@ def create_app() -> FastAPI:
         ),
         lifespan=lifespan,
     )
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
     app.add_middleware(TraceIdMiddleware)
     # CORS must be registered before routes for frontend preflight requests.
     # TanStack/Vite dev suele usar 8080 o 5173; 3000 era el Next antiguo.
@@ -98,6 +115,20 @@ def create_app() -> FastAPI:
         cors_kw["allow_origin_regex"] = r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
     app.add_middleware(CORSMiddleware, **cors_kw)
 
+    @app.middleware("http")
+    async def auth_guard(request: Any, call_next: Any) -> Any:
+        path = request.url.path
+        public_paths = {"/health", "/openapi.json", "/docs", "/redoc"}
+        if request.method == "OPTIONS" or path in public_paths or path.startswith("/auth/"):
+            return await call_next(request)
+        auth_header = request.headers.get("authorization", "")
+        if not auth_header.startswith("Bearer "):
+            return JSONResponse(status_code=401, content={"detail": "Missing bearer token"})
+        token = auth_header[7:].strip()
+        payload = verify_access_token(token)
+        request.state.user = payload.get("sub")
+        return await call_next(request)
+
     @app.get("/health")
     def health() -> dict[str, Any]:
         s = get_settings()
@@ -113,6 +144,7 @@ def create_app() -> FastAPI:
             },
         }
 
+    app.include_router(auth.router)
     app.include_router(chat.router)
     app.include_router(conversations.router)
     app.include_router(pokedex.router)

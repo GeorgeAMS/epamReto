@@ -1,6 +1,7 @@
 // Cliente API único. Toda llamada al backend pasa por aquí.
 // Cambia VITE_API_URL en .env (sin tocar componentes) para apuntar a otro host.
 import type { ChatSource, Confidence, Pokemon, PokemonType, StreamEvent } from "./types";
+import { getAuthToken } from "@/lib/auth";
 
 export const API_BASE = (import.meta.env.VITE_API_URL ?? "http://127.0.0.1:18001").replace(/\/$/, "");
 
@@ -17,11 +18,13 @@ export class ApiError extends Error {
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const url = `${API_BASE}${path}`;
   let res: Response;
+  const token = getAuthToken();
   try {
     res = await fetch(url, {
       ...init,
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(init.headers ?? {}),
       },
     });
@@ -38,6 +41,11 @@ function safeJson(t: string): unknown { try { return JSON.parse(t); } catch { re
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
+  login: (payload: { username: string; password: string }) =>
+    request<{ access_token: string; token_type: string; username: string }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }),
 
   // Pokédex
   pokedexTypes: () => request<{ types: PokemonType[] } | PokemonType[]>("/pokedex/types"),
@@ -82,9 +90,14 @@ export async function streamChat(
   onEvent: (ev: StreamEvent) => void,
   signal?: AbortSignal,
 ): Promise<void> {
+  const token = getAuthToken();
   const res = await fetch(`${API_BASE}/chat/stream`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: JSON.stringify(payload),
     signal,
   });

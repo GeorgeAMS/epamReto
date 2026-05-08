@@ -1,0 +1,27 @@
+---
+description: Security baseline (FastAPI + LLM + frontend)
+alwaysApply: true
+---
+
+# Auth y autorización
+- La sesión y permisos se validan en el **servidor** (API). Nunca confíes en el cliente para “quién es el usuario”.
+- Si hay recurso por ID (perfil, conversación, equipo): el ID debe corresponder al usuario autenticado (`resource_owner == session.user`), no solo “que el ID exista” (evitar IDOR).
+- APIs públicas sensibles (chat, streaming): define límites (rate limit, tamaño de payload, orígenes permitidos).
+
+# Secretos y configuración
+- API keys, JWT secret, strings de DB: **solo** variables de entorno / gestor de secretos; nunca en código ni en commits.
+- En JWT u opciones similares: `exp` corto cuando aplique; algoritmo explícito; rotación donde toque.
+
+# LLM y prompt injection
+- **No** interpolar texto libre del usuario dentro del **system prompt** o instrucciones fijas del modelo. El mensaje del usuario va como **contenido de usuario** / datos etiquetados, separados del rol sistema.
+- Tratar la entrada del chat como **dato no confiable**: límites de longitud, sanitización mínima donde aplique, y políticas claras en el orquestador.
+
+# Validación de entrada
+- Cada endpoint define **esquema** (Pydantic / validación explícita). Rechazar campos extra si el contrato es estricto.
+- Validar tipos y rangos en `context` u objetos anidados, no solo el string principal.
+
+# Logs y trazas
+- No loguear cuerpos completos de petición si pueden llevar tokens, contraseñas o PII. Redactar campos sensibles.
+
+# CORS y red
+- Orígenes permitidos explícitos en producción; no `*` con credenciales.

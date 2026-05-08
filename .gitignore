@@ -10,6 +10,8 @@
 *.pem
 *.key
 
+# Cursor MCP con token local (copiar desde `.cursor/mcp.json.example`)
+.cursor/mcp.json
 # --- Python ----------------------------------------------------------------
 __pycache__/
 *.py[cod]

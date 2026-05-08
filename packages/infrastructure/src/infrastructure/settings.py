@@ -54,6 +54,13 @@ class Settings(BaseSettings):
     api_host: str = "0.0.0.0"
     api_port: int = 8000
     api_log_level: str = "INFO"
+    # Límite por IP para POST /chat y /chat/stream (mitiga abuso de API pública + LLM).
+    chat_rate_limit_per_minute: int = Field(default=60, ge=1, le=100_000)
+    # Auth básica para proteger acceso a la app.
+    auth_user: str = "admin"
+    auth_password: str = "admin12345"
+    auth_token_secret: str = "change-me-in-env-very-long-random-secret"
+    auth_token_exp_minutes: int = Field(default=480, ge=5, le=10_080)
     api_cors_origins: str = (
         "http://localhost:3000,http://127.0.0.1:3000,"
         "http://localhost:3001,http://127.0.0.1:3001,"
