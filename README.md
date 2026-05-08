@@ -131,6 +131,35 @@ Metodología tipo **Cursor × Nexo** (rules + endurecer API + Semgrep MCP). Camb
 **Después (mitigado):**
 - `apps/api/src/api/routers/pokedex.py`: query base estática y filtros aplicados en Python, evitando SQL dinámico con input.
 
+### 🧩 Cómo funciona el flujo Nexo en este proyecto
+
+En Pokédex Arcana la seguridad quedó integrada como una **tubería de trabajo**, no como un parche puntual:
+
+1. **Rules siempre activas** (`.cursor/rules/*.mdc`) para que Cursor priorice auth, validación, secretos y anti-injection.
+2. **Prompt de seguridad Nexo** (`.cursor/prompts/nexo-security-prompt.md`) antes de codificar features sensibles.
+3. **Implementación en API**: login server-side, rutas protegidas, rate limiting, logs redaccionados, validación estricta.
+4. **Escaneo Semgrep** para detectar regressions (ejemplo real: SQLi en Pokédex, ya corregido).
+5. **Documentación antes/después** en este README para dejar evidencia técnica y de negocio.
+
+```mermaid
+flowchart LR
+    A["1) Rules Nexo<br/>.cursor/rules/security.mdc"] --> B["2) Prompt Nexo<br/>riesgos -> mitigaciones -> código"]
+    B --> C["3) Cambios en código<br/>auth + validación + rate limit + logs seguros"]
+    C --> D["4) Semgrep scan<br/>detectar hallazgos"]
+    D --> E{"¿Hay findings?"}
+    E -- "Sí" --> F["Corregir y re-escanear"]
+    F --> D
+    E -- "No" --> G["5) README antes/después<br/>evidencia final"]
+```
+
+### ✅ Qué protege exactamente
+
+- **Acceso a endpoints**: sin token, API responde `401`; con login válido, permite acceso.
+- **Chat público**: límite por IP configurable para evitar abuso/costos por LLM.
+- **Entrada de chat**: `context` validado con esquema estricto (`extra=forbid`).
+- **Logs**: no se guarda la query completa en producción; se usa hash + longitud.
+- **Datos Pokédex**: se eliminó SQL dinámico inseguro reportado por Semgrep.
+
 ---
 
 ## 🧱 Stack (sin marear)
